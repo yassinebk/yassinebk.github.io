@@ -1,13 +1,15 @@
-import { ChakraProvider } from "@chakra-ui/react";
 import "../styles/globals.css";
-import theme from "../styles/theme";
+import Fonts from "../styles/fonts";
+import { Chakra } from "../components/getUserTheme";
 
 function MyApp({ Component, pageProps }) {
   return (
-    <ChakraProvider theme={theme}>
+    <Chakra cookies={pageProps.cookies}>
       <Component {...pageProps} />
-    </ChakraProvider>
+    </Chakra>
   );
 }
 
 export default MyApp;
+
+export { getServerSideProps } from "../components/getUserTheme";
