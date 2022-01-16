@@ -14,6 +14,7 @@ export const GetToKnowSection: React.FC<GetToKnowProps> = ({}) => {
   return (
     <Flex
       minH="75vh"
+      marginTop={[16]}
       id="section-position-container"
       justifyContent="center"
       alignItems="center"
@@ -23,15 +24,18 @@ export const GetToKnowSection: React.FC<GetToKnowProps> = ({}) => {
       <SectionHeading>Get to know me !</SectionHeading>
       <Box
         gridTemplateColumns="repeat(12,1fr)"
+        alignItems="center"
         gridGap="4"
-        display={["flex", "flex", "flex", "grid"]}
+        marginTop="8"
+        display={["flex", "flex", "flex", "flex"]}
         flexDir={["column", "column", "row"]}
         justifyContent="space-around"
+        maxW="1323px"
         w="full"
-        px={4}
+        px={[4, 4, 4, 24]}
       >
         <KnowMeCard cardHeading={"Biographie"} index={0}>
-          <Text fontSize="2xl">
+          <Text fontSize="xl">
             I am <span style={{ color }}> 19 years old tunisian student.</span>{" "}
             I am a curious person who loves learning new things and having new
             experiences.I am a book worm an art lover and a life hacker!

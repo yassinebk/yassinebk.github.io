@@ -11,7 +11,7 @@ interface ParallaxProps {
 const ParallaxContainer: React.FC<ParallaxProps> = ({
   children,
   styleProps,
-  variants
+  variants,
 }) => {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -28,9 +28,10 @@ const ParallaxContainer: React.FC<ParallaxProps> = ({
 };
 const Parallax: React.FC<ParallaxProps> = ({
   variants,
-  children
+  styleProps,
+  children,
 }: ParallaxProps): JSX.Element => {
-  const [ref, isVisible] = useInView({ threshold: 0.4 });
+  const [ref, isVisible] = useInView({ threshold: 0.7 });
   const defaultVariants = {
     show: { opacity: 1, translateY: 0 },
     hidden: { opacity: 0, translateY: -200 },
@@ -38,9 +39,10 @@ const Parallax: React.FC<ParallaxProps> = ({
   return (
     <motion.div
       ref={ref}
-      variants={variants?variants:defaultVariants}
+      variants={variants ? variants : defaultVariants}
       transition={{ duration: 0.8, ease: "easeInOut" }}
       animate={isVisible ? "show" : "hidden"}
+      style={styleProps}
     >
       {children}
     </motion.div>
