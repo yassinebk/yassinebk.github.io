@@ -20,27 +20,26 @@ export const SkillBar: React.FC<SkillBarProps> = ({
   skillLevel,
   skillName,
 }) => {
+  const numberColor = useColorModeValue("#258EDE", "#CFE4FF");
 
-    
-    
-  const numberColor = useColorModeValue("#258EDE", "darkSecondary");
-    
   return (
-      <motion.div
-      
-          style={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems:'flex-end'
-    }} >
-      <VStack>
-        <Text fontSize="2xl">{skillName}</Text>
+    <motion.div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "flex-end",
+        justifyContent:'space-between',
+        maxWidth:'547px'
+      }}
+    >
+          <VStack width={["65px","65px","65px","70px"]} >
+        <Text fontSize={["xl", "xl", "xl","xl", "2xl"]}>{skillName}</Text>
         <Text fontSize="2xl" color={numberColor}>
           {skillLevel}
         </Text>
       </VStack>
       <Center pb="4">
-          <CustomProgress value={skillLevel}/>
+        <CustomProgress value={skillLevel} />
       </Center>
     </motion.div>
   );
