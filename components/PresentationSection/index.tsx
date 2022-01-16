@@ -29,14 +29,23 @@ export const PresentationSection: React.FC<PresentationSectionProps> = ({}) => {
     "linear-gradient(90deg, #A8C0FF 0%, #CFE4FF 101.94%)"
   );
 
+  const variants = {
+    show: { opacity: 1, translateY: 0 },
+    hidden: { opacity: 0, translateY: -200 },
+  };
+
+  
+
+
   return (
-    <Parallax show={{ opacity: 1, translateY: 0 }} hidden={{opacity:0,translate:-20}}>
-      <Flex
-        h="75vh"
+      <Parallax variants={variants}
+      styleProps={{height:'75vh',width:'100%'}}
+      > 
+          <Flex
+          w="full"
         id="section-position-container"
         justifyContent="center"
         alignItems="center"
-        w="full"
       >
         <Flex
           id="section-elements-container"

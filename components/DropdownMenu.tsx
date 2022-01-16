@@ -54,8 +54,9 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({}) => {
       >
         <motion.div {...zoomInAnimation()} id="dropdown-menu-list">
           <IconButton
-            minH="60px"
-            minW="60px"
+            scale={0.7}
+            minH={["40px", "45px", "45px", "50px"]}
+            minW={["40px", "45px", "45px", "50px"]}
             bgColor={bgColor}
             onClick={onToggle}
             border="0.4px solid"
@@ -63,7 +64,7 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({}) => {
             borderRadius="999999px"
             icon={isOpen ? <CloseIcon /> : HamburgerIcon}
             color="inherit"
-            padding="10.3125px"
+            padding="1.3125px"
             justifyContent="center"
             alignItems="center"
             aria-label="Dropdown button"

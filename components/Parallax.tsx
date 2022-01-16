@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { motion, MotionStyle, Variant } from "framer-motion";
+import { motion, MotionStyle, Variant, Variants } from "framer-motion";
 import { useInView } from "react-intersection-observer";
+import { createAnimation } from "../utils/createAnimation";
 
 interface ParallaxProps {
-  hidden: Variant;
-  show: Variant;
+  variants?: Variants;
   styleProps?: MotionStyle;
 }
 
 const ParallaxContainer: React.FC<ParallaxProps> = ({
   children,
-  hidden,
-  show,
   styleProps,
+  variants
 }) => {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -20,7 +19,7 @@ const ParallaxContainer: React.FC<ParallaxProps> = ({
   }, []);
   if (visible) {
     return (
-      <Parallax hidden={hidden} show={show} styleProps={styleProps}>
+      <Parallax variants={variants} styleProps={styleProps}>
         {children}
       </Parallax>
     );
@@ -28,24 +27,18 @@ const ParallaxContainer: React.FC<ParallaxProps> = ({
   return null;
 };
 const Parallax: React.FC<ParallaxProps> = ({
-  children,
-  styleProps,
-  hidden,
-  show,
+  variants,
+  children
 }: ParallaxProps): JSX.Element => {
   const [ref, isVisible] = useInView({ threshold: 0.4 });
-  const variants = {
+  const defaultVariants = {
     show: { opacity: 1, translateY: 0 },
-    hidden: { opacity: 0, translateX: -200 },
+    hidden: { opacity: 0, translateY: -200 },
   };
-  useEffect(() => { 
-    console.log(isVisible)
-  },[isVisible])
-
   return (
     <motion.div
       ref={ref}
-      variants={variants}
+      variants={variants?variants:defaultVariants}
       transition={{ duration: 0.8, ease: "easeInOut" }}
       animate={isVisible ? "show" : "hidden"}
     >

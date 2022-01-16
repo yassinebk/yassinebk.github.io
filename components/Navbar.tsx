@@ -19,7 +19,7 @@ export const Navbar: React.FC<NavbarProps> = ({}) => {
       left={0}
       top={0}
       bgColor={bgColor}
-      height="8 vh"
+      height="8vh"
       minH="100px"
       gridTemplateColumns={[
         "repeat(6,1fr)",

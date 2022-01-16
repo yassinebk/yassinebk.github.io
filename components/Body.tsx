@@ -12,7 +12,7 @@ export const Body: React.FC<BodyProps> = ({ children }) => {
       flexDir="column"
       zIndex="base"
     >
-      <Box minH="100px" height="10vh"  id="navbar-placeholder" />
+      <Box minH="100px" height="20vh"  id="navbar-placeholder" />
       {children}
 
       <Box minH="67px" id="footer-placeholder" h="20vh" w="100vw" />
