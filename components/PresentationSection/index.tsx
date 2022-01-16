@@ -34,15 +34,13 @@ export const PresentationSection: React.FC<PresentationSectionProps> = ({}) => {
     hidden: { opacity: 0, translateY: -200 },
   };
 
-  
-
-
   return (
-      <Parallax variants={variants}
-      styleProps={{height:'75vh',width:'100%'}}
-      > 
-          <Flex
-          w="full"
+    <Parallax
+      variants={variants}
+      styleProps={{ minHeight: "75vh", width: "100%" }}
+    >
+      <Flex
+        w="full"
         id="section-position-container"
         justifyContent="center"
         alignItems="center"

@@ -18,9 +18,9 @@ export const KnowMeCard: React.FC<KnowMeCardProps> = ({
   );
 
   const border = useColorModeValue("1px solid #24313A", "0px solid");
-  const cardBg = useColorModeValue("transparent", "cardDark");
+  const cardBg = useColorModeValue("transparent", "#25313A");
   const style = {
-    backgroundColor: cardBg,
+    background: cardBg,
     paddingLeft: "24px",
     paddingRight: "24px",
     borderRadius: 5,
@@ -68,7 +68,7 @@ case 2:
   return (
     <ParallaxContainer styleProps={style} variants={{hidden,show}}>
       <Box>
-        <Heading fontSize="3xl" bg={headerTitle} bgClip="text">
+        <Heading fontSize="3xl" bg={headerTitle} bgClip="text" mb="4">
           {cardHeading}
         </Heading>
       </Box>

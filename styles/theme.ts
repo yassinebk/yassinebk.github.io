@@ -8,11 +8,11 @@ const theme = extendTheme({
   },
 
   styles: {
-    global: (props)=>({
-      body:{
+    global: (props) => ({
+      body: {
         bg: mode("lightBackground", "darkBackground")(props),
-        color:mode("lightSecondary","lightBackground")(props)
-      }
+        color: mode("lightSecondary", "lightBackground")(props),
+      },
     }),
   },
   colors: {
@@ -25,4 +25,4 @@ const theme = extendTheme({
   },
 });
 
-export default theme
+export default theme;
