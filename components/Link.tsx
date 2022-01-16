@@ -15,6 +15,9 @@ export const Link: React.FC<LinkProps> = ({ route }) => {
   console.log(router);
   return (
     <motion.div
+      style={{
+        height: "100%",
+      }}
       initial={{
         opacity: 0,
         translateY: -10,
@@ -27,8 +30,9 @@ export const Link: React.FC<LinkProps> = ({ route }) => {
     >
       <NextLink passHref href={route.route}>
         <ChakraLink
+          height={["50px"]}
           fontFamily={"Inversionz Unboxed"}
-          fontSize="4xl"
+          fontSize={["2xl", "2xl", "4xl"]}
           color={router.pathname === route.route ? activeColor : "inherit"}
           textDecor={router.pathname === route.route ? "underline" : "none"}
         >

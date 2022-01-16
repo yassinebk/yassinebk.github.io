@@ -2,6 +2,7 @@ html,
 body {
   padding: 0;
   margin: 0;
+  width: 100vw;
 }
 
 a {
@@ -11,4 +12,22 @@ a {
 
 * {
   box-sizing: border-box;
+}
+
+.navbar-header {
+  grid-column-start: 1;
+  grid-column-end: 6;
+  flex-direction: row;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+@media screen and (max-width: 1000px) {
+  .navbar-header {
+    grid-column-start: 1;
+    grid-column-end: 3;
+  }
 }

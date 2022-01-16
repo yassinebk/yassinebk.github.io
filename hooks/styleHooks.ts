@@ -16,7 +16,7 @@ export const useThemeBackground = () => {
 export const useThemeText = () => {
   const textColor = useColorModeValue("lightSecondary", "lightBackground");
   const inversedTextColor = useColorModeValue(
-    "darkBackground",
+    "lightBackground",
     "lightSecondary"
   );
 

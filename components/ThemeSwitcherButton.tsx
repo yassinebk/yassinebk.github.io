@@ -49,7 +49,7 @@ export const ThemeSwitcherButton: React.FC<ThemeSwitcherButtonProps> = ({}) => {
       transition="all"
       transitionDuration="500ms"
       borderRadius={1}
-      gridColumnStart={12}
+      gridColumnStart={[6, 6, 6, 12]}
       bgColor={bgColor}
       _hover={{
         bgColor: inversedBgColor,
