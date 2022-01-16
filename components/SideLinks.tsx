@@ -1,4 +1,4 @@
-import { VStack } from "@chakra-ui/react";
+import { Flex, VStack } from "@chakra-ui/react";
 import React from "react";
 import { AiOutlineFacebook } from "react-icons/ai";
 import { AiFillLinkedin } from "react-icons/ai";
@@ -32,7 +32,11 @@ const LinkedinLink = () => {
 const CVLink = () => {
   const { inversedTextColor, textColor } = useThemeText();
   return (
-    <Link _hover={{ color: inversedTextColor,bgColor:inversedTextColor }} padding={1} bgColor={textColor}>
+    <Link
+      _hover={{ color: inversedTextColor, bgColor: inversedTextColor }}
+      padding={1}
+      bgColor={textColor}
+    >
       <svg
         width="30"
         height="30"
@@ -56,10 +60,18 @@ const CVLink = () => {
 };
 export const SideLinks: React.FC<SideLinksProps> = ({}) => {
   return (
-    <VStack position="fixed" right={5} spacing={1} top="30%">
+    <Flex
+      zIndex={0}
+      position="fixed"
+      right={5}
+      spacing={1}
+      top={[ "30%"]}
+      display={['none','none','flex']}
+      flexDir={["row", "row", "column", "column"]}
+    >
       <FacebookLink />
       <LinkedinLink />
       <CVLink />
-    </VStack>
+    </Flex>
   );
 };

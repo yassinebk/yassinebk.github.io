@@ -9,6 +9,7 @@ export const Footer: React.FC<FooterProps> = ({}) => {
   const { inversedTextColor } = useThemeText();
   return (
     <Center
+      zIndex="banner"
       as="footer"
       id="main-footer"
       w="100vw"
@@ -19,7 +20,7 @@ export const Footer: React.FC<FooterProps> = ({}) => {
       bgColor={inversedBgColor}
       color={inversedTextColor}
     >
-      <Text fontStyle="400" fontSize={["lg","lg", "2xl"]}>
+      <Text fontStyle="400" fontSize={["lg", "lg", "2xl"]} textAlign="center">
         &copy; Yassine Belkhadem, 2022 · All Copyrights Reserved.
       </Text>
     </Center>

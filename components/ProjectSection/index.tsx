@@ -1,10 +1,13 @@
-import React from 'react'
-import Image from "next/image"
+import React from "react";
+import Image from "next/image";
+import { Flex } from "@chakra-ui/react";
 
-interface ProjectSectionProps {
-
-}
+interface ProjectSectionProps {}
 
 export const ProjectSection: React.FC<ProjectSectionProps> = ({}) => {
-    return (<div></div>);
-}
+    return <Flex>
+        <Flex></Flex>
+        
+
+  </Flex>;
+};

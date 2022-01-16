@@ -8,8 +8,8 @@ interface ThemeSwitcherButtonProps {}
 const MoonIcon = (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    height={40}
-    width={40}
+    height={35}
+    width={35}
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -24,8 +24,8 @@ const MoonIcon = (
 );
 const SunIcon = (
   <svg
-    height={40}
-    width={40}
+    height={35}
+    width={35}
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
     viewBox="0 0 24 24"

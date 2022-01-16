@@ -29,7 +29,10 @@ export const fadeInAnimationLeft = (transition: number = 0.5) => ({
   },
 });
 
-export const fadeInAnimationRight = (transition: number = 0.5) => ({
+export const fadeInAnimationRight = (
+  transition: number = 0.5,
+  delay: number = 0
+) => ({
   initial: {
     translateX: 20,
     opacity: 0,
@@ -40,9 +43,13 @@ export const fadeInAnimationRight = (transition: number = 0.5) => ({
   },
   transition: {
     duration: transition,
+    delay: delay,
   },
 });
-export const fadeInAnimationUp = (transition: number = 0.5) => ({
+export const fadeInAnimationUp = (
+  transition: number = 0.5,
+  delay: number = 0
+) => ({
   initial: {
     translateY: -20,
     opacity: 0,
@@ -53,10 +60,14 @@ export const fadeInAnimationUp = (transition: number = 0.5) => ({
   },
   transition: {
     duration: transition,
+    delay,
   },
 });
 
-export const fadeInAnimationBottom = (transition: number = 0.5) => ({
+export const fadeInAnimationBottom = (
+  transition: number = 0.5,
+  delay: number = 0
+) => ({
   initial: {
     translateX: +20,
     opacity: 0,
@@ -66,10 +77,14 @@ export const fadeInAnimationBottom = (transition: number = 0.5) => ({
     opacity: 1,
   },
   transition: {
-    duration: 0.5,
+    duration: transition,
+    delay,
   },
 });
-export const zoomInAnimation= (transition: number = 0.5) => ({
+export const zoomInAnimation = (
+  transition: number = 0.5,
+  delay: number = 0
+) => ({
   initial: {
     scale: 0.4,
     opacity: 0,
@@ -79,6 +94,7 @@ export const zoomInAnimation= (transition: number = 0.5) => ({
     opacity: 1,
   },
   transition: {
-    duration: 0.5,
+    duration: transition,
+    delay,
   },
 });
