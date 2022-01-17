@@ -21,7 +21,7 @@ export const GetToKnowSection: React.FC<GetToKnowProps> = ({}) => {
       opacity: 1,
       transition: {
         delayChildren: 0.7,
-        staggerChildren: 0.3,
+        staggerChildren: 0.1,
       },
     },
   };

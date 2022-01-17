@@ -9,7 +9,7 @@ import {
 import { motion } from "framer-motion";
 import React, { useEffect, useRef } from "react";
 import ParallaxContainer from "../Parallax";
-import { CustomProgress } from "./CustomProgress";
+import { CustomProgress } from "../CustomProgress";
 
 interface SkillBarProps {
   skillName: string;

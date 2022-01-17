@@ -1,9 +1,7 @@
-import { Flex, VStack } from "@chakra-ui/react";
+import { Flex, Link } from "@chakra-ui/react";
 import React from "react";
-import { AiOutlineFacebook } from "react-icons/ai";
-import { AiFillLinkedin } from "react-icons/ai";
-import { Link } from "@chakra-ui/react";
-import { useThemeBackground, useThemeText } from "../hooks/styleHooks";
+import { AiFillLinkedin, AiOutlineFacebook } from "react-icons/ai";
+import { useThemeText } from "../hooks/styleHooks";
 
 interface SideLinksProps {}
 
@@ -65,8 +63,8 @@ export const SideLinks: React.FC<SideLinksProps> = ({}) => {
       position="fixed"
       right={5}
       spacing={1}
-      top={[ "30%"]}
-      display={['none','none','flex']}
+      top={["30%"]}
+      display={["none", "none", "flex"]}
       flexDir={["row", "row", "column", "column"]}
     >
       <FacebookLink />

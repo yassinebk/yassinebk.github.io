@@ -35,7 +35,7 @@ export const PresentationSection: React.FC<PresentationSectionProps> = ({}) => {
   };
 
   return (
-    <Parallax
+    <><Parallax
       variants={variants}
       styleProps={{ minHeight: "75vh", width: "100%" }}
     >
@@ -59,8 +59,7 @@ export const PresentationSection: React.FC<PresentationSectionProps> = ({}) => {
                 src="/assets/LeftSection.png"
                 width={474}
                 height={614}
-                alt="my picture"
-              />
+                alt="my picture" />
             </motion.div>
           </Box>
           <VStack
@@ -129,7 +128,6 @@ export const PresentationSection: React.FC<PresentationSectionProps> = ({}) => {
           </VStack>
         </Flex>
       </Flex>
-      <Divider />
-    </Parallax>
+    </Parallax><Divider /></>
   );
 };

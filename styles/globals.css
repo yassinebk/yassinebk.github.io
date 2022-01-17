@@ -25,12 +25,15 @@ a {
   width: 100%;
 }
 
-#image-cadre{
-border: 1px solid;
-border-image-source: linear-gradient(180deg, #A7C0FF 0%, #6DB2FF 100%);
-
-
+#image-cadre {
+  border: 1px solid;
+  border-image-source: linear-gradient(180deg, #a7c0ff 0%, #6db2ff 100%);
 }
+
+.project-card-homepage:hover {
+  border: #6db2ff 1px solid;
+}
+
 @media screen and (max-width: 1000px) {
   .navbar-header {
     grid-column-start: 1;
