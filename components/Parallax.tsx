@@ -6,7 +6,7 @@ import { createAnimation } from "../utils/createAnimation";
 interface ParallaxProps {
   variants?: Variants;
   styleProps?: MotionStyle;
-  children:ReactNode
+  children: ReactNode;
 }
 
 const ParallaxContainer: React.FC<ParallaxProps> = ({
@@ -32,7 +32,7 @@ const Parallax: React.FC<ParallaxProps> = ({
   styleProps,
   children,
 }: ParallaxProps): JSX.Element => {
-  const [ref, isVisible] = useInView({ threshold: 0.8 });
+  const [ref, isVisible] = useInView({ threshold: 0.5 });
   const defaultVariants = {
     show: { opacity: 1, translateY: 0 },
     hidden: { opacity: 0, translateY: -200 },

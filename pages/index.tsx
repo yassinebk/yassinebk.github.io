@@ -1,3 +1,4 @@
+import { ContactSection } from "../components/ContactSection";
 import { GetToKnowSection } from "../components/GetToKnowSection";
 import Layout from "../components/Layout";
 import { PresentationSection } from "../components/PresentationSection";
@@ -11,6 +12,7 @@ export default function Home() {
       <GetToKnowSection />
       <SkillSection />
       <ProjectSection/>
+      <ContactSection/>
     </Layout>
   );
 }
