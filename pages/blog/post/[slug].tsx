@@ -7,6 +7,8 @@ interface SlugProps {
 
 }
 
-export const Slug: React.FC<SlugProps> = ({}) => {
+const Article: React.FC<SlugProps> = ({}) => {
         return (<Layout title={''}></Layout>);
 }
+
+export default Article;

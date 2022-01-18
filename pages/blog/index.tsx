@@ -1,23 +1,51 @@
-import { Box, Divider, Flex, Grid, HStack, VStack } from "@chakra-ui/react";
+import { DeleteIcon } from "@chakra-ui/icons";
+import {
+  Box,
+  Divider,
+  Flex,
+  HStack,
+  IconButton,
+  VStack,
+} from "@chakra-ui/react";
 import React from "react";
 import { BlogCard } from "../../components/Blog/BlogCard";
 import { BlogHeading } from "../../components/Blog/BlogHeading";
 import { BlogTag } from "../../components/Blog/BlogTag";
 import { Searchbar } from "../../components/Blog/Searchbar";
 import Layout from "../../components/Layout";
-import { useFilter } from "../../hooks/useFilter";
+import { useTagFilter } from "../../hooks/useTagFilter";
+import { getAllPosts } from "../../lib/getAllPost";
+import { getAllTags } from "../../lib/getAllTags";
 
-interface BlogProps {}
+interface BlogProps {
+  posts: any;
+  tags: any;
+}
 
-const BlogPage: React.FC<BlogProps> = ({}) => {
-  const { setOption, filter, resetFilter } = useFilter([],[]);
-  const mockData=[1,1,1,1,1,1,1,1,1,,1,1,1]
+const BlogPage: React.FC<BlogProps> = ({ posts, tags }) => {
+  const { addTag, tagFilter, resetTagFilter, toggleTag } = useTagFilter(
+    [],
+    tags.map((t) => t.attributes.short)
+  );
+  const getPosts = () => {
+    return posts.filter((p) => {
+      for (let i = 0; i < tagFilter.length; i++) {
+        if (
+          !p.attributes.tags.data
+            .map((t) => t.attributes.short)
+            .includes(tagFilter[i])
+        )
+          return false;
+      }
+      return true;
+    });
+  };
   return (
     <Layout title={"YB - Blog"} isFooterPresent={false}>
       <Searchbar
-        setOption={setOption}
-        filter={filter}
-        resetFilter={resetFilter}
+        setOption={addTag}
+        filter={tagFilter}
+        resetFilter={resetTagFilter}
       />
       <Box h="8" />
       <Box
@@ -46,7 +74,16 @@ const BlogPage: React.FC<BlogProps> = ({}) => {
           h="100%"
           marginBottom={["200px", "200px", "200px", "0px"]}
         >
-          <BlogHeading>Tags</BlogHeading>
+          <BlogHeading>Tags</BlogHeading>{" "}
+          <HStack w="100%" justifyContent="flex-end">
+            <IconButton
+              justifySelf="flex-end"
+              size="sm"
+              aria-label="clear tags"
+              onClick={resetTagFilter}
+              icon={<DeleteIcon />}
+            />
+          </HStack>
           <Box
             flexWrap="wrap"
             w="100%"
@@ -57,31 +94,17 @@ const BlogPage: React.FC<BlogProps> = ({}) => {
             // gridGap="24"
             px={[4, 4, 4, 0]}
           >
-            <BlogTag
-              label="Label ONE"
-              numberOfArticles={3}
-              onClick={() => console.log("set filter")}
-            />
-            <BlogTag
-              label="Label ONE"
-              numberOfArticles={3}
-              onClick={() => console.log("set filter")}
-            />
-            <BlogTag
-              label="Label ONE"
-              numberOfArticles={3}
-              onClick={() => console.log("set filter")}
-            />
-            <BlogTag
-              label="Label ONE"
-              numberOfArticles={3}
-              onClick={() => console.log("set filter")}
-            />
-            <BlogTag
-              label="Label ONE"
-              numberOfArticles={3}
-              onClick={() => console.log("set filter")}
-            />
+            {tags.map((t) => (
+              <BlogTag
+                activated={tagFilter.includes(t.attributes.short)}
+                label={t.attributes.title}
+                key={t.attributes.short}
+                numberOfArticles={
+                  t.attributes.posts ? t.attributes.posts.data.length : 0
+                }
+                onClick={() => toggleTag(t.attributes.short)}
+              />
+            ))}
           </Box>
         </VStack>
         <VStack
@@ -116,8 +139,15 @@ const BlogPage: React.FC<BlogProps> = ({}) => {
             scrollBehavior="smooth"
             px="4"
           >
-            {mockData.map((el, i) => <BlogCard date="2/02/12" description="Loream daskfmkadsfkjaslfjadslfjalsdfljaslkdjfl" index={i} key={i} title="How to reach the stars and beome a agreat" id={"4"} />)}
-      
+            {getPosts().map((p, i) => (
+              <BlogCard
+                date={p.attributes.date}
+                index={i}
+                key={p.attributes.slug}
+                title={p.attributes.title}
+                id={p.id}
+              />
+            ))}
           </Flex>
           <Divider />
         </VStack>
@@ -127,3 +157,15 @@ const BlogPage: React.FC<BlogProps> = ({}) => {
 };
 
 export default BlogPage;
+
+export const getStaticProps = async () => {
+  const posts = await getAllPosts();
+  console.log(posts[0].attributes.tags.data);
+  const tags = await getAllTags();
+  return {
+    props: {
+      tags,
+      posts,
+    },
+  };
+};

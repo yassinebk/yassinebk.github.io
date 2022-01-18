@@ -1,21 +1,17 @@
 import {
-  Box,
-  Flex,
-  Heading,
+  Box, Heading,
   HStack,
   Text,
-  useColorModeValue,
+  useColorModeValue
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import NextLink from "next/link";
 import React from "react";
-import ParallaxContainer from "../Parallax";
 import { Tag } from "../Tag";
 
 interface ProjectCardProps {
   date: string;
   title: string;
-  description: string;
   id: string;
   index: number;
 }
@@ -24,16 +20,11 @@ export const BlogCard: React.FC<ProjectCardProps> = ({
   date,
   index,
   id,
-  description,
   title,
 }) => {
   const border = useColorModeValue("1px solid #24313A", "0px solid");
   const cardBg = useColorModeValue("transparent", "#25313A");
   const dateColor = useColorModeValue("lightSecondary", "darkSecondary");
-  const child = {
-    hidden: { opacity: 0, translateY: -30, scale: 0.6 },
-    show: { opacity: 1, translateY: 0, scale: 1 },
-  };
   return (
     <NextLink href={`/article/${id}`}>
       <motion.div

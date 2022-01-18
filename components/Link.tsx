@@ -12,7 +12,6 @@ interface LinkProps {
 export const Link: React.FC<LinkProps> = ({ route }) => {
   const router = useRouter();
   const activeColor = useColorModeValue("lightSecondary", "darkSecondary");
-  console.log(router);
   return (
     <motion.div
       style={{
