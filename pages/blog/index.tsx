@@ -13,6 +13,7 @@ import { BlogHeading } from "../../components/Blog/BlogHeading";
 import { BlogTag } from "../../components/Blog/BlogTag";
 import { Searchbar } from "../../components/Blog/Searchbar";
 import Layout from "../../components/Layout";
+import { useSearchFilter } from "../../hooks/useSearchFilter";
 import { useTagFilter } from "../../hooks/useTagFilter";
 import { getAllPosts } from "../../lib/getAllPost";
 import { getAllTags } from "../../lib/getAllTags";
@@ -27,8 +28,10 @@ const BlogPage: React.FC<BlogProps> = ({ posts, tags }) => {
     [],
     tags.map((t) => t.attributes.short)
   );
+  const { resetSearchFilter, searchFilter, updateSearchFilter } =
+    useSearchFilter();
   const getPosts = () => {
-    return posts.filter((p) => {
+    const tagFilteredPosts = posts.filter((p) => {
       for (let i = 0; i < tagFilter.length; i++) {
         if (
           !p.attributes.tags.data
@@ -39,13 +42,24 @@ const BlogPage: React.FC<BlogProps> = ({ posts, tags }) => {
       }
       return true;
     });
+
+
+    return posts.filter((post) => {
+      return (
+        post.attributes.title
+          .toString()
+          .toLowerCase()
+          .indexOf(searchFilter.toLowerCase()) > -1
+      );
+    });
   };
   return (
     <Layout title={"YB - Blog"} isFooterPresent={false}>
       <Searchbar
-        setOption={addTag}
-        filter={tagFilter}
-        resetFilter={resetTagFilter}
+
+        updateSearchFilter={updateSearchFilter}
+        searchFilter={searchFilter}
+        resetSearchFilter={resetSearchFilter}
       />
       <Box h="8" />
       <Box
@@ -77,6 +91,7 @@ const BlogPage: React.FC<BlogProps> = ({ posts, tags }) => {
           <BlogHeading>Tags</BlogHeading>{" "}
           <HStack w="100%" justifyContent="flex-end">
             <IconButton
+              mb={4}
               justifySelf="flex-end"
               size="sm"
               aria-label="clear tags"
@@ -140,13 +155,7 @@ const BlogPage: React.FC<BlogProps> = ({ posts, tags }) => {
             px="4"
           >
             {getPosts().map((p, i) => (
-              <BlogCard
-                date={p.attributes.date}
-                index={i}
-                key={p.attributes.slug}
-                title={p.attributes.title}
-                id={p.id}
-              />
+              <BlogCard key={p.attributes.slug} blog={p.attributes} index={i} />
             ))}
           </Flex>
           <Divider />
@@ -160,7 +169,7 @@ export default BlogPage;
 
 export const getStaticProps = async () => {
   const posts = await getAllPosts();
-  console.log(posts[0].attributes.tags.data);
+  // console.log(posts[0].attributes.tags.data);
   const tags = await getAllTags();
   return {
     props: {

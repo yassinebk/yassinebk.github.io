@@ -1,7 +1,5 @@
-import { Box, ChakraProvider } from "@chakra-ui/react";
-import "../styles/globals.css";
-import Fonts from "../styles/fonts";
 import { Chakra } from "../components/getUserTheme";
+import "../styles/globals.css";
 
 function MyApp({ Component, pageProps }) {
   return (

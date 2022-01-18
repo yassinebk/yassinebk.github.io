@@ -3,12 +3,16 @@ import { HStack, Input, useColorModeValue } from "@chakra-ui/react";
 import React from "react";
 
 interface SearchbarProps {
-  setOption: (option: any) => void;
-  filter: any;
-  resetFilter: () => void;
+  updateSearchFilter: (option: any) => void;
+  searchFilter: any;
+  resetSearchFilter: () => void;
 }
 
-export const Searchbar: React.FC<SearchbarProps> = ({ setOption }) => {
+export const Searchbar: React.FC<SearchbarProps> = ({
+  updateSearchFilter,
+  searchFilter,
+  resetSearchFilter,
+}) => {
   const textColor = useColorModeValue("#F8F8F8", "inherit");
   return (
     <HStack
@@ -23,13 +27,14 @@ export const Searchbar: React.FC<SearchbarProps> = ({ setOption }) => {
     >
       <SearchIcon position="absolute" left={5} />
       <Input
+        value={searchFilter}
+        onChange={(event) => updateSearchFilter(event.target.value)}
         px="12"
-        // onChange={setOption}
         borderWidth={0}
         placeholder="Search"
         bgColor="transparent"
       />
-      <CloseIcon position="absolute" right={5} />
+      <CloseIcon position="absolute" right={5} onClick={resetSearchFilter} _hover={{opacity:0.5,scale:1.1}} />
     </HStack>
   );
 };

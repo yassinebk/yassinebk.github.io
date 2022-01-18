@@ -1,17 +1,24 @@
 import { fetchAPI } from "./api";
 import qs from "qs";
 
-const query = qs.stringify(
-  {
-    populate: "*",
-  },
-  {
-    encodeValuesOnly: true,
-  }
-);
 
-export const getPost = async (id) => {
-  const post = await fetchAPI(`posts/id?${query}`).then((r) => r.data);
+
+export const getPost = async (slug) => {
+  const query = qs.stringify(
+    {
+      filters: {
+        slug: {
+          $eq: slug,
+        },
+      },
+      populate: "*",
+    },
+    {
+      encodeValuesOnly: true,
+    }
+  );
+  console.log(query);
+  const post = await fetchAPI(`posts?${query}`).then((r) => r.data[0]);
 
   return post;
 };

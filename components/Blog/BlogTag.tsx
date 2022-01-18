@@ -31,7 +31,7 @@ export const BlogTag: React.FC<BlogTagsProps> = ({
         color: inversedTextColor,
         opacity: 0.8,
       }}
-      borderRadius={3}
+      borderRadius={2}
       px="1"
     >
       <Text>{label}</Text>

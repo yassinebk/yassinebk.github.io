@@ -23,7 +23,7 @@ export const KnowMeCard: React.FC<KnowMeCardProps> = ({
     background: cardBg,
     paddingLeft: "24px",
     paddingRight: "24px",
-    borderRadius: 5,
+    borderRadius: '5px',
     border,
     minHeight: "320px",
     width: "100%",

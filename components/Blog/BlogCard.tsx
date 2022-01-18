@@ -1,8 +1,9 @@
 import {
-  Box, Heading,
+  Box,
+  Heading,
   HStack,
   Text,
-  useColorModeValue
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import NextLink from "next/link";
@@ -10,23 +11,16 @@ import React from "react";
 import { Tag } from "../Tag";
 
 interface ProjectCardProps {
-  date: string;
-  title: string;
-  id: string;
+  blog: any;
   index: number;
 }
 
-export const BlogCard: React.FC<ProjectCardProps> = ({
-  date,
-  index,
-  id,
-  title,
-}) => {
+export const BlogCard: React.FC<ProjectCardProps> = ({ blog, index }) => {
   const border = useColorModeValue("1px solid #24313A", "0px solid");
   const cardBg = useColorModeValue("transparent", "#25313A");
   const dateColor = useColorModeValue("lightSecondary", "darkSecondary");
   return (
-    <NextLink href={`/article/${id}`}>
+    <NextLink href={`/blog/${blog.slug}`}>
       <motion.div
         initial={{
           opacity: 0,
@@ -49,7 +43,7 @@ export const BlogCard: React.FC<ProjectCardProps> = ({
           width: "100%",
           backgroundColor: cardBg,
           border: border,
-          borderRadius: 5,
+          borderRadius: '5px',
           flexDirection: "column",
           paddingTop: "2%",
           paddingBottom: "2%",
@@ -59,14 +53,15 @@ export const BlogCard: React.FC<ProjectCardProps> = ({
       >
         <Box h="300px" w="100%" bgColor="gray.300" mb="4" borderRadius={3} />
         <HStack alignItems="center" justifyContent="space-between" height="40%">
-          <Heading fontSize={["lg", "xl", "3xl", "3xl"]}>{title}</Heading>
+          <Heading fontSize={["lg", "xl", "3xl", "3xl"]}>{blog.title}</Heading>
           <Text color={dateColor} as="h4">
-            {date}
+            {blog.date}
           </Text>
         </HStack>
         <Box h="12px" />
         <HStack>
-          <Tag label="Computer Science" /> <Tag label="Great Guy" />
+          {
+            blog.tags.data.map(t => <Tag label={t.attributes.title} key={t.attributes.short} /> ) }
         </HStack>
         <Box h="20px" />
       </motion.div>

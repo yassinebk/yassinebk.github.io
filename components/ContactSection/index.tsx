@@ -91,7 +91,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({}) => {
           <VStack
             alignItems={["center", "center", "flex-start"]}
             px={["0%", "0%", "5%"]}
-            borderRadius={5}
+            borderRadius={2}
             w={['100%','100%',"400px"]}
             paddingTop={["12", "12", 0]}
           >
