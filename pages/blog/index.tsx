@@ -10,7 +10,7 @@ import { useFilter } from "../../hooks/useFilter";
 interface BlogProps {}
 
 const BlogPage: React.FC<BlogProps> = ({}) => {
-  const { setOption, filter, resetFilter } = useFilter();
+  const { setOption, filter, resetFilter } = useFilter([],[]);
   const mockData=[1,1,1,1,1,1,1,1,1,,1,1,1]
   return (
     <Layout title={"YB - Blog"} isFooterPresent={false}>
@@ -116,7 +116,7 @@ const BlogPage: React.FC<BlogProps> = ({}) => {
             scrollBehavior="smooth"
             px="4"
           >
-            {mockData.map((el, i) => <BlogCard date="2/02/12" description="Loream daskfmkadsfkjaslfjadslfjalsdfljaslkdjfl" index={i} key={i} title="How to reach the stars and beome a agreat" />)}
+            {mockData.map((el, i) => <BlogCard date="2/02/12" description="Loream daskfmkadsfkjaslfjadslfjalsdfljaslkdjfl" index={i} key={i} title="How to reach the stars and beome a agreat" id={"4"} />)}
       
           </Flex>
           <Divider />
