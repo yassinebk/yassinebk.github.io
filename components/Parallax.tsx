@@ -7,10 +7,12 @@ interface ParallaxProps {
   variants?: Variants;
   styleProps?: MotionStyle;
   children: ReactNode;
+  treshhold:number,
 }
 
 const ParallaxContainer: React.FC<ParallaxProps> = ({
   children,
+  treshhold,
   styleProps,
   variants,
 }) => {
@@ -20,7 +22,7 @@ const ParallaxContainer: React.FC<ParallaxProps> = ({
   }, []);
   if (visible) {
     return (
-      <Parallax variants={variants} styleProps={styleProps}>
+      <Parallax variants={variants} styleProps={styleProps}  treshhold={treshhold}>
         {children}
       </Parallax>
     );
@@ -31,8 +33,9 @@ const Parallax: React.FC<ParallaxProps> = ({
   variants,
   styleProps,
   children,
+  treshhold
 }: ParallaxProps): JSX.Element => {
-  const [ref, isVisible] = useInView({ threshold: 0.5 });
+  const [ref, isVisible] = useInView({ threshold: treshhold?treshhold:0.5 });
   const defaultVariants = {
     show: { opacity: 1, translateY: 0 },
     hidden: { opacity: 0, translateY: -200 },

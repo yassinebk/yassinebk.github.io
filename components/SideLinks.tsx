@@ -59,11 +59,11 @@ const CVLink = () => {
 export const SideLinks: React.FC<SideLinksProps> = ({}) => {
   return (
     <Flex
-      zIndex={0}
+      zIndex={"banner"}
       position="fixed"
       right={5}
       spacing={1}
-      top={["30%"]}
+      top={["20%"]}
       display={["none", "none", "flex"]}
       flexDir={["row", "row", "column", "column"]}
     >

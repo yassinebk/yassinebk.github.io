@@ -3,6 +3,7 @@ body {
   padding: 0;
   margin: 0;
   width: 100vw;
+  overflow-x: hidden;
 }
 
 a {
@@ -40,3 +41,31 @@ a {
     grid-column-end: 3;
   }
 }
+
+body::-webkit-scrollbar {
+  width: 12px; /* width of the entire scrollbar */
+}
+
+body::-webkit-scrollbar-track {
+  background: #eceef1; /* color of the tracking area */
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: #25313a; /* color of the scroll thumb */
+  border-radius: 20px; /* roundness of the scroll thumb */
+  border: 1px solid #293640; /* creates padding around scroll thumb */
+}
+.scrollbar::-webkit-scrollbar {
+  width: 12px; /* width of the entire scrollbar */
+}
+
+.scrollbar::-webkit-scrollbar-track {
+  background: #eceef1; /* color of the tracking area */
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background-color: #25313a; /* color of the scroll thumb */
+  border-radius: 20px; /* roundness of the scroll thumb */
+  border: 1px solid #293640; /* creates padding around scroll thumb */
+}
+

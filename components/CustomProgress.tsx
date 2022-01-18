@@ -12,9 +12,10 @@ export const CustomProgress: React.FC<CustomProgressProps> = ({
   value,
   index,
 }) => {
-  const [ref, isVisible] = useInView({threshold:0.1});
-  const progressMainColor = useColorModeValue("#143258", "#ECEEF1");
-
+  const [ref, isVisible] = useInView({ threshold: 0.1 });
+  const progressMainColor = useColorModeValue("#143258", "#88A6BC");
+  const progressSecondColor= useColorModeValue("#88A6BC","#ECEEF1")
+  ;
   const variants = {
     show: { width: `${value}%` },
     hidden: { width: 0 },
@@ -22,10 +23,10 @@ export const CustomProgress: React.FC<CustomProgressProps> = ({
   return (
     <Box
       ref={ref}
-      w={["150px", "200px", "150px","300px", "430px"]}
+      w={["150px", "200px", "150px", "300px", "430px"]}
       h="11px"
       paddingBottom={0}
-      bgColor="#88A6BC"
+      bgColor={progressSecondColor}
       display="flex"
       alignItems="center"
     >

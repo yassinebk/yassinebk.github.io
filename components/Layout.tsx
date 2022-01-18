@@ -8,9 +8,10 @@ import { SideLinks } from "./SideLinks";
 
 interface LayoutProps {
   title: string;
+  isFooterPresent?: boolean;
 }
 
- const Layout: React.FC<LayoutProps> = ({ children, title }) => {
+const Layout: React.FC<LayoutProps> = ({ children, title, isFooterPresent = true }) => {
   return (
     <>
       <Head>
@@ -23,7 +24,7 @@ interface LayoutProps {
       </Head>
       <Navbar />
       <SideLinks />
-      <Body>{children}</Body>
+      <Body isFooterPresent={isFooterPresent}>{children}</Body>
       <Footer />
     </>
   );
