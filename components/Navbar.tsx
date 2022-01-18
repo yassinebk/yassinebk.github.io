@@ -1,4 +1,4 @@
-import { Grid, Heading } from "@chakra-ui/react";
+import { Grid, Heading, useColorModeValue } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import NextLink from "next/link";
 import React from "react";
@@ -11,6 +11,10 @@ interface NavbarProps {}
 
 export const Navbar: React.FC<NavbarProps> = ({}) => {
   const { bgColor } = useThemeBackground();
+  const headingHoverColor = useColorModeValue(
+    "lightSecondary",
+    "darkSecondary"
+  );
   return (
     <Grid
       zIndex="banner"
@@ -39,6 +43,11 @@ export const Navbar: React.FC<NavbarProps> = ({}) => {
       >
         <NextLink href="/">
           <Heading
+            _hover={{
+              color: headingHoverColor,
+              opacity: 0.7,
+            }}
+            cursor="pointer"
             id="navbar-header"
             fontFamily={"Inversionz Unboxed"}
             pl={[1, 2, 0]}

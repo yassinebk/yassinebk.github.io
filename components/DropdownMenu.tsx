@@ -17,10 +17,11 @@ import { Link } from "./Link";
 interface DropdownMenuProps {}
 
 export const DropdownMenu: React.FC<DropdownMenuProps> = ({}) => {
-  const { isOpen, onToggle } = useDisclosure();
+  const { isOpen, onToggle,onClose } = useDisclosure();
   const { bgColor, inversedBgColor } = useThemeBackground();
   return (
     <Flex
+    
       id="dropdown-menu-container"
       position="relative"
       overflow="visible"

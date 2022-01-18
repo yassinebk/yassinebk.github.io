@@ -9,7 +9,7 @@ const FacebookLink = () => {
   const { inversedTextColor, textColor } = useThemeText();
   return (
     <Link
-      href="dsfasdf"
+      href="https://www.facebook.com/yassine.belkhadm/"
       _hover={{ color: inversedTextColor, bgColor: textColor }}
     >
       <AiOutlineFacebook size={50} />
@@ -20,7 +20,7 @@ const LinkedinLink = () => {
   const { inversedTextColor, textColor } = useThemeText();
   return (
     <Link
-      href="dsfasdf"
+    href="https://www.linkedin.com/in/yassine-belkhadem-396266204/"
       _hover={{ color: inversedTextColor, bgColor: textColor }}
     >
       <AiFillLinkedin size={50} />
