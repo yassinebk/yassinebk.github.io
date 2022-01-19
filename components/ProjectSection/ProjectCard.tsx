@@ -45,6 +45,7 @@ export const HomePageProjectCard: React.FC<ProjectCardProps> = ({
       variants={child}
       style={{
         alignSelf: "stretch",
+
         margin: "16px 16px",
         backgroundColor: cardBg,
         border: border,
@@ -60,13 +61,15 @@ export const HomePageProjectCard: React.FC<ProjectCardProps> = ({
       }}
     >
       <Box>
-        <Heading as="h1">{project.attributes.title}</Heading>
+        <Heading as="h1" fontSize="3xl">
+          {project.attributes.title}
+        </Heading>
         <Text color={dateColor} as="h4">
           {project.attributes.date}
         </Text>
       </Box>
       <Box h="12px" />
-      <HStack>
+      <HStack wrap="wrap" rowGap={2}>
         {project.attributes.tags.data.map((t) => (
           <Tag label={t.attributes.title} key={t.attributes.short} />
         ))}
@@ -107,6 +110,7 @@ export const HomePageProjectCard: React.FC<ProjectCardProps> = ({
         borderRadius={2}
         h="full"
         minH="320px"
+        maxH="320px"
         minW="100%"
         w="full"
         alignSelf="center"

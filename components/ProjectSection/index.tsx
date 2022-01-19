@@ -63,6 +63,7 @@ export const ProjectSection: React.FC<ProjectSectionProps> = ({ projects }) => {
                 width: "100vw",
                 alignItems: "center",
                 justifyContent: "center",
+                padding:16
               }}
             >
               {projects.slice(0, 6).map((project, index) => (

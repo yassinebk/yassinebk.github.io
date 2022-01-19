@@ -29,6 +29,7 @@ a {
 #image-cadre {
   border: 1px solid;
   border-image-source: linear-gradient(180deg, #a7c0ff 0%, #6db2ff 100%);
+  scale: 0.9;
 }
 
 .project-card-homepage:hover {
@@ -39,6 +40,11 @@ a {
   .navbar-header {
     grid-column-start: 1;
     grid-column-end: 3;
+  }
+}
+@media screen and (min-width: 1000px) {
+  .project-card-homepage {
+    align-self: stretch;
   }
 }
 
