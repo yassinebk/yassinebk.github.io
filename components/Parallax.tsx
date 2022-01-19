@@ -39,7 +39,8 @@ const Parallax: React.FC<ParallaxProps> = ({
   treshhold,
 }: ParallaxProps): JSX.Element => {
   const [ref, isVisible] = useInView({
-    threshold: treshhold ? treshhold : 0.7,
+    threshold: treshhold ? treshhold : 0.8,
+    triggerOnce:true
   });
   const defaultVariants = {
     show: { opacity: 1, translateY: 0 },

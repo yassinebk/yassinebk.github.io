@@ -1,17 +1,18 @@
+import { ChevronLeftIcon } from "@chakra-ui/icons";
 import {
-  Link,
   Box,
+  Divider,
   Heading,
   HStack,
+  Link,
+  Skeleton,
   Text,
   useColorModeValue,
   VStack,
-  Divider,
-  Skeleton,
-  Stack,
 } from "@chakra-ui/react";
 import Image from "next/image";
-import React, { useEffect } from "react";
+import NextLink from "next/link";
+import React from "react";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
 import CodeBlock from "../../components/CodeBlock";
@@ -26,9 +27,8 @@ import Layout from "../../components/Layout";
 import { Tag } from "../../components/Tag";
 import { getAllPosts } from "../../lib/getAllPost";
 import { getPost } from "../../lib/getPost";
+import NextImage from "next/image";
 import "../../styles/blogPost.module.css";
-import NextLink from "next/link";
-import { ChevronLeftIcon } from "@chakra-ui/icons";
 
 interface BlogPostProps {
   post: any;
@@ -105,7 +105,7 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
             />
           </Box>
           <Divider maxW="900px" my={12} />
-          <Box w="100%" maxW="900px" className="blogPost" px={[10, 10, 12, 12]}>
+          <Box w="100%" maxW="800px" className="blogPost" px={[10, 10, 12, 12]}>
             <ReactMarkdown
               remarkPlugins={[gfm]}
               components={{
@@ -115,6 +115,29 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
                 h4: Header4,
                 h5: Header5,
                 code,
+                li: (props) => (
+                  <HStack alignItems="center" my={1}>
+                    <Box w="1" h="1" rounded="full" bgColor="#8CB0CB" mr={1} />
+                    <Text>{props.children}</Text>
+                  </HStack>
+                ),
+
+                img: (props) => {
+                  return (
+                    <VStack alignItems="center" my={12}>
+                      <img src={props.src} alt={props.alt} />
+                      <Text
+                        colorScheme="blackAlpha"
+                        alignSelf="center"
+                        mx="auto"
+                        w="fit-content"
+                        textAlign="center"
+                      >
+                        {props.alt}
+                      </Text>
+                    </VStack>
+                  );
+                },
               }}
 
               // transformLinkUri={}
