@@ -83,9 +83,7 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
           <Heading color={textColor} fontSize={["3xl", "4xl", "6xl", "7xl"]}>
             {post.attributes.title}
           </Heading>
-          <Text color={dateColor} as="h4">
-            {post.attributes.date}
-          </Text>
+          <Text color={dateColor}>{post.attributes.date}</Text>
           <HStack wrap="wrap">
             {post.attributes.tags.data.map((t) => (
               <Tag label={t.attributes.title} key={t.attributes.short} />
