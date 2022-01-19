@@ -59,8 +59,7 @@ export const BlogCard: React.FC<ProjectCardProps> = ({ post, index }) => {
         }}
       >
         <Center h="300px" w="100%" mb="4" borderRadius={3}>
-          <Image
-            alt={post.coverImage.data.attributes.name}
+          <Image alt={post.coverImage.data.attributes.name}
             src={post.coverImage.data.attributes.formats.large.url}
             width={post.coverImage.data.attributes.formats.large.width}
             height={post.coverImage.data.attributes.formats.large.height}

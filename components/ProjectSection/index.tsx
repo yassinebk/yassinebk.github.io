@@ -2,14 +2,11 @@ import { ArrowDownIcon, ArrowUpIcon } from "@chakra-ui/icons";
 import {
   Button,
   Divider,
-  Flex,
-  Portal,
-  Text,
-  useColorModeValue,
+  Flex, Text,
+  useColorModeValue
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import React, { useState } from "react";
-import { getAllProjects } from "../../lib/getAllProjects";
 import { SectionHeading } from "../SectionHeading";
 import { HomePageProjectCard } from "./ProjectCard";
 
@@ -52,7 +49,7 @@ export const ProjectSection: React.FC<ProjectSectionProps> = ({ projects }) => {
     <>
       {projects.length !== 0 && (
         <>
-          <Flex {...(style as any)} px={[4]}>
+          <Flex {...(style as any)} px={[4]} id="project-section-header">
             <SectionHeading>Projects</SectionHeading>
             <motion.div
               layout
