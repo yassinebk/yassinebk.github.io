@@ -11,12 +11,15 @@ interface LayoutProps {
   isFooterPresent?: boolean;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children, title, isFooterPresent = true }) => {
+const Layout: React.FC<LayoutProps> = ({
+  children,
+  title,
+  isFooterPresent = true,
+}) => {
   return (
     <>
       <Head>
         <title>{title}</title>
-        <meta name="google-site-verification" content="IEmuSUOB_if6WhDIVoAQp7jE3IMuR7mViobTZ6L2fO8" />
         <meta
           name="description"
           content="Yassine Belkhadem Portfolio Website"

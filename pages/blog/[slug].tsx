@@ -7,9 +7,11 @@ import {
   useColorModeValue,
   VStack,
   Divider,
+  Skeleton,
+  Stack,
 } from "@chakra-ui/react";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
 import CodeBlock from "../../components/CodeBlock";
@@ -48,9 +50,14 @@ const code = ({ node, inline, className, children, ...props }) => {
 };
 
 const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
+  console.log("here post inside blog post", typeof post);
   const dateColor = useColorModeValue("lightSecondary", "darkSecondary");
 
   const textColor = useColorModeValue("#536073", "#ADCEFF");
+  if (!post) {
+    return null;
+  }
+
   return (
     <Layout title={post.attributes.title}>
       <NextLink href="/blog" passHref>
@@ -64,51 +71,61 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
           </Link>
         </Box>
       </NextLink>
-      <VStack alignItems="center">
-        <Heading color={textColor} fontSize={["3xl", "4xl", "6xl", "7xl"]}>
-          {post.attributes.title}
-        </Heading>
-        <Text color={dateColor} as="h4">
-          {post.attributes.date}
-        </Text>
-        <HStack wrap="wrap">
-          {post.attributes.tags.data.map((t) => (
-            <Tag label={t.attributes.title} key={t.attributes.short} />
-          ))}
-        </HStack>
-        <Box h="32px" />
-        <Box borderRadius={2} shadow="md" px={[8, 8, 10, 10]}>
-          <Image
-            alt={post.attributes.coverImage.data.attributes.name}
-            src={post.attributes.coverImage.data.attributes.formats.large.url}
-            width={
-              post.attributes.coverImage.data.attributes.formats.large.width
-            }
-            height={
-              post.attributes.coverImage.data.attributes.formats.large.height
-            }
-          />
-        </Box>
-        <Divider maxW="900px" my={12} />
-        <Box w="100%" maxW="900px" className="blogPost" px={[10, 10, 12, 12]}>
-          <ReactMarkdown
-            remarkPlugins={[gfm]}
-            components={{
-              h1: Header1,
-              h2: Header2,
-              h3: Header3,
-              h4: Header4,
-              h5: Header5,
-              code,
-            }}
 
-            // transformLinkUri={}
-            // transformImageUri={}
-          >
-            {post.attributes.content}
-          </ReactMarkdown>
-        </Box>
-      </VStack>
+      {!post ? (
+        <VStack mt="5%">
+          <Skeleton height="20vh" minH="400px" w="70vw" />
+          <Skeleton height="5vh" w="70vw" />
+          <Skeleton height="5vh" w="70vw" />
+          <Skeleton height="5vh" w="70vw" />
+        </VStack>
+      ) : (
+        <VStack alignItems="center">
+          <Heading color={textColor} fontSize={["3xl", "4xl", "6xl", "7xl"]}>
+            {post.attributes.title}
+          </Heading>
+          <Text color={dateColor} as="h4">
+            {post.attributes.date}
+          </Text>
+          <HStack wrap="wrap">
+            {post.attributes.tags.data.map((t) => (
+              <Tag label={t.attributes.title} key={t.attributes.short} />
+            ))}
+          </HStack>
+          <Box h="32px" />
+          <Box borderRadius={2} shadow="md" px={[8, 8, 10, 10]}>
+            <Image
+              alt={post.attributes.coverImage.data.attributes.name}
+              src={post.attributes.coverImage.data.attributes.formats.large.url}
+              width={
+                post.attributes.coverImage.data.attributes.formats.large.width
+              }
+              height={
+                post.attributes.coverImage.data.attributes.formats.large.height
+              }
+            />
+          </Box>
+          <Divider maxW="900px" my={12} />
+          <Box w="100%" maxW="900px" className="blogPost" px={[10, 10, 12, 12]}>
+            <ReactMarkdown
+              remarkPlugins={[gfm]}
+              components={{
+                h1: Header1,
+                h2: Header2,
+                h3: Header3,
+                h4: Header4,
+                h5: Header5,
+                code,
+              }}
+
+              // transformLinkUri={}
+              // transformImageUri={}
+            >
+              {post.attributes.content}
+            </ReactMarkdown>
+          </Box>
+        </VStack>
+      )}
     </Layout>
   );
 };
@@ -122,6 +139,7 @@ export const getStaticPaths = async () => {
       params: { slug: post.attributes.slug }, //Generating paths with [slug] subs
     };
   });
+  console.log("paths", paths);
   return {
     paths,
     fallback: true,
@@ -129,9 +147,8 @@ export const getStaticPaths = async () => {
 };
 
 export async function getStaticProps({ params }) {
-  console.log('get static post')
   const post = await getPost(params.slug);
-  console.log(post)
+  console.log("post for get static props", typeof post);
 
   if (!post) {
     return {

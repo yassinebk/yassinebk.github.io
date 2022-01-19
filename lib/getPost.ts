@@ -1,8 +1,6 @@
 import { fetchAPI } from "./api";
 import qs from "qs";
 
-
-
 export const getPost = async (slug) => {
   const query = qs.stringify(
     {
@@ -17,7 +15,6 @@ export const getPost = async (slug) => {
       encodeValuesOnly: true,
     }
   );
-  console.log(query);
   const post = await fetchAPI(`posts?${query}`).then((r) => r.data[0]);
 
   return post;

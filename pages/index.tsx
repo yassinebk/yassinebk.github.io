@@ -17,6 +17,7 @@ export default function Home({projects}) {
     </Layout>
   );
 }
+
 export const getStaticProps = async () => {
   const projects = await getAllProjects();
   return {
