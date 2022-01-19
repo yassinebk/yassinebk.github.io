@@ -3,16 +3,15 @@ import {
   Divider,
   Flex,
   useColorModeValue,
-  VStack,
+  VStack
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import React from "react";
-import { useInView } from "react-intersection-observer";
 import {
   fadeInAnimationLeft,
   fadeInAnimationRight,
-  fadeInAnimationUp,
+  fadeInAnimationUp
 } from "../../utils/constants";
 import Parallax from "../Parallax";
 import { AnimatedHeader } from "./AnimatedHeader";

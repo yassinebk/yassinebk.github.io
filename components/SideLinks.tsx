@@ -20,7 +20,7 @@ const LinkedinLink = () => {
   const { inversedTextColor, textColor } = useThemeText();
   return (
     <Link
-    href="https://www.linkedin.com/in/yassine-belkhadem-396266204/"
+      href="https://www.linkedin.com/in/yassine-belkhadem-396266204/"
       _hover={{ color: inversedTextColor, bgColor: textColor }}
     >
       <AiFillLinkedin size={50} />
@@ -32,6 +32,7 @@ const CVLink = () => {
   return (
     <Link
       _hover={{ color: inversedTextColor, bgColor: inversedTextColor }}
+      href="/assets/YassineBelkhademCV.pdf"
       padding={1}
       bgColor={textColor}
     >

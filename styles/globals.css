@@ -100,9 +100,20 @@ body::-webkit-scrollbar-thumb {
 
 
 /* .blogPost:a {
-} */ 
+} */
 
-.blogPost p,.blogPost li ,.blogPost , .blogPost h1,.blogPost h2 ,.blogPost h3 ,.blogPost h4  {
-  font-family: 'Sen';
-  width:100%
+.blogPost p,
+.blogPost li,
+.blogPost,
+.blogPost h1,
+.blogPost h2,
+.blogPost h3,
+.blogPost h4 {
+  font-family: "Sen";
+  width: 100%;
+}
+
+.blog-card:hover {
+  transform: scale(0.8);
+  opacity: 0.9;
 }

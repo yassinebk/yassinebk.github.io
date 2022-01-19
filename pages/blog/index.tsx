@@ -17,6 +17,7 @@ import { useSearchFilter } from "../../hooks/useSearchFilter";
 import { useTagFilter } from "../../hooks/useTagFilter";
 import { getAllPosts } from "../../lib/getAllPost";
 import { getAllTags } from "../../lib/getAllTags";
+import { generateSiteMap } from "../../utils/createSitemap";
 
 interface BlogProps {
   posts: any;
@@ -24,7 +25,7 @@ interface BlogProps {
 }
 
 const BlogPage: React.FC<BlogProps> = ({ posts, tags }) => {
-  const { addTag, tagFilter, resetTagFilter, toggleTag } = useTagFilter(
+  const { tagFilter, resetTagFilter, toggleTag } = useTagFilter(
     [],
     tags.map((t) => t.attributes.short)
   );
@@ -43,8 +44,7 @@ const BlogPage: React.FC<BlogProps> = ({ posts, tags }) => {
       return true;
     });
 
-
-    return posts.filter((post) => {
+    return tagFilteredPosts.filter((post) => {
       return (
         post.attributes.title
           .toString()
@@ -56,13 +56,13 @@ const BlogPage: React.FC<BlogProps> = ({ posts, tags }) => {
   return (
     <Layout title={"YB - Blog"} isFooterPresent={false}>
       <Searchbar
-
         updateSearchFilter={updateSearchFilter}
         searchFilter={searchFilter}
         resetSearchFilter={resetSearchFilter}
       />
       <Box h="8" />
       <Box
+        justifyItems="center"
         marginBottom={["60x", "60px", "60px", "120px", "0px"]}
         display={["flex", "flex", "flex", "flex", "grid"]}
         gridTemplateColumns={[
@@ -77,7 +77,9 @@ const BlogPage: React.FC<BlogProps> = ({ posts, tags }) => {
         px={[4, 4, 4, 4, 8]}
         gridGap={4}
         alignItems={["center", "center", "center", "center", "flex-end"]}
-        justifyContent="space-around"
+        maxH={["100%", "100%", "100%", "100%", "55vh", "58vh"]}
+        justifyContent="center"
+        scrollBehavior="smooth"
         position="relative"
       >
         <VStack
@@ -155,7 +157,7 @@ const BlogPage: React.FC<BlogProps> = ({ posts, tags }) => {
             px="4"
           >
             {getPosts().map((p, i) => (
-              <BlogCard key={p.attributes.slug} blog={p.attributes} index={i} />
+              <BlogCard key={p.attributes.slug} post={p.attributes} index={i} />
             ))}
           </Flex>
           <Divider />
@@ -171,6 +173,7 @@ export const getStaticProps = async () => {
   const posts = await getAllPosts();
   // console.log(posts[0].attributes.tags.data);
   const tags = await getAllTags();
+  generateSiteMap(posts);
   return {
     props: {
       tags,

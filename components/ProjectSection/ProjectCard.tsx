@@ -11,20 +11,15 @@ import { motion } from "framer-motion";
 import NextLink from "next/link";
 import React from "react";
 import { AiFillGithub } from "react-icons/ai";
+import Image from "next/image";
 import { Tag } from "../Tag";
 
 interface ProjectCardProps {
-  date: string;
-  title: string;
-  description: string;
-  id: string;
+  project:any
 }
 
 export const HomePageProjectCard: React.FC<ProjectCardProps> = ({
-  date,
-  id,
-  description,
-  title,
+  project
 }) => {
   const border = useColorModeValue("1px solid #24313A", "0px solid");
   const cardBg = useColorModeValue("transparent", "#25313A");
@@ -35,7 +30,7 @@ export const HomePageProjectCard: React.FC<ProjectCardProps> = ({
     show: { opacity: 1, translateY: 0, scale: 1 },
   };
   return (
-    <NextLink href={`/article/${id}`}>
+    <NextLink href={`/blog/${project.post.data.attributes.slug}`}>
       <motion.div
         className="project-card-homepage"
         variants={child}
@@ -54,9 +49,9 @@ export const HomePageProjectCard: React.FC<ProjectCardProps> = ({
         }}
       >
         <Box>
-          <Heading as="h1">{title}</Heading>
+          <Heading as="h1">{project.title}</Heading>
           <Text color={dateColor} as="h4">
-            {date}
+            {project.date}
           </Text>
         </Box>
         <Box h="12px" />
@@ -68,21 +63,23 @@ export const HomePageProjectCard: React.FC<ProjectCardProps> = ({
         <Box>
           <Text as="p"></Text>
         </Box>
-        <Text>{description}</Text>
+        <Text>{project.description}</Text>
         <Box h="10px" />
         <HStack spacing={8}>
           <HStack>
             <AiFillGithub />
-            <Link fontSize="xl" color={linkColor}>
+            <Link fontSize="xl" color={linkColor} href={project.githubLink}>
               Github Link
             </Link>
           </HStack>
-          <HStack>
-            <LinkIcon />
-            <Link fontSize="xl" color={linkColor}>
-              Live Preview
-            </Link>
-          </HStack>
+          {project.livePreview && (
+            <HStack>
+              <LinkIcon />
+              <Link fontSize="xl" color={linkColor} href={project.livePreview}>
+                Live Preview
+              </Link>
+            </HStack>
+          )}
         </HStack>
         <Box h="10px" />
         <Box
@@ -92,7 +89,14 @@ export const HomePageProjectCard: React.FC<ProjectCardProps> = ({
           minW="100%"
           w="full"
           alignSelf="center"
-        ></Box>
+        >
+          <Image
+            alt={project.coverImage.data.attributes.name}
+            src={project.coverImage.data.attributes.formats.large.url}
+            width={project.coverImage.data.attributes.formats.large.width}
+            height={project.coverImage.data.attributes.formats.large.height}
+          />
+        </Box>
       </motion.div>
     </NextLink>
   );

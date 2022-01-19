@@ -9,10 +9,6 @@ export const Routes: Route[] = [
     label: "Blog",
     route: "/blog",
   },
-  {
-    label: "Contact",
-    route: "/contact",
-  },
 ];
 
 export const fadeInAnimationLeft = (transition: number = 0.5) => ({

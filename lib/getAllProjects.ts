@@ -10,9 +10,8 @@ const query = qs.stringify(
   }
 );
 
-export const getAllPosts = async () => {
-
-  const posts = await fetchAPI(`posts?${query}`).then((r) => r.data);
+export const getAllProjects = async () => {
+  const posts = await fetchAPI(`projects?${query}`).then((r) => r.data);
 
   return posts;
 };

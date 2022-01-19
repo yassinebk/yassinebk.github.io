@@ -1,5 +1,5 @@
 import { CloseIcon, SearchIcon } from "@chakra-ui/icons";
-import { HStack, Input, useColorModeValue } from "@chakra-ui/react";
+import { HStack, IconButton, Input, useColorModeValue } from "@chakra-ui/react";
 import React from "react";
 
 interface SearchbarProps {
@@ -34,7 +34,7 @@ export const Searchbar: React.FC<SearchbarProps> = ({
         placeholder="Search"
         bgColor="transparent"
       />
-      <CloseIcon position="absolute" right={5} onClick={resetSearchFilter} _hover={{opacity:0.5,scale:1.1}} />
+        <IconButton aria-label='reset search' bgColor="transparent" icon={<CloseIcon/>} position="absolute" right={5} onClick={resetSearchFilter} _hover={{opacity:0.5,scale:1.1}} />
     </HStack>
   );
 };
