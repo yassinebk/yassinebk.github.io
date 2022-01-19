@@ -1,4 +1,4 @@
-import { Heading, useColorModeValue } from "@chakra-ui/react";
+import { Heading, useColorModeValue, Text } from "@chakra-ui/react";
 
 export const Header1 = (props) => {
   const h1Color = useColorModeValue("#22223b", "#d8e2dc");

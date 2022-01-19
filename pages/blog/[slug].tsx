@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { ChevronLeftIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -8,7 +9,7 @@ import {
   Skeleton,
   Text,
   useColorModeValue,
-  VStack,
+  VStack
 } from "@chakra-ui/react";
 import Image from "next/image";
 import NextLink from "next/link";
@@ -21,13 +22,12 @@ import {
   Header2,
   Header3,
   Header4,
-  Header5,
+  Header5
 } from "../../components/HeaderRenderer";
 import Layout from "../../components/Layout";
 import { Tag } from "../../components/Tag";
 import { getAllPosts } from "../../lib/getAllPost";
 import { getPost } from "../../lib/getPost";
-import NextImage from "next/image";
 import "../../styles/blogPost.module.css";
 
 interface BlogPostProps {
