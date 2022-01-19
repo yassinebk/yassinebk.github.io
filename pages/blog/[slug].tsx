@@ -80,7 +80,11 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
         </VStack>
       ) : (
         <VStack alignItems="center" maxW="1000px" mx="auto">
-          <Heading color={textColor} fontSize={["3xl", "4xl", "6xl", "7xl"]}>
+          <Heading
+            color={textColor}
+            fontSize={["3xl", "4xl", "6xl", "7xl"]}
+            textAlign="center"
+          >
             {post.attributes.title}
           </Heading>
           <Text color={dateColor}>{post.attributes.date}</Text>
