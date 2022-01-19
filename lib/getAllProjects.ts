@@ -13,7 +13,6 @@ const query = qs.stringify(
 export const getAllProjects = async () => {
 
   const posts = await fetchAPI(`projects?${query}`).then((r) => r.data);
-  console.log(posts)
 
   return posts;
 };

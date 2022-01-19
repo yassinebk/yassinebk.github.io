@@ -6,13 +6,13 @@ import { ProjectSection } from "../components/ProjectSection";
 import { SkillSection } from "../components/SkillSection";
 import { getAllProjects } from "../lib/getAllProjects";
 
-export default function Home({projects}) {
+export default function Home({ projects }) {
   return (
     <Layout title="YB - Porfolio">
       <PresentationSection />
       <GetToKnowSection />
       <SkillSection />
-      <ProjectSection projects={projects}/>
+      <ProjectSection projects={projects} />
       <ContactSection />
     </Layout>
   );
@@ -24,6 +24,6 @@ export const getStaticProps = async () => {
     props: {
       projects: projects ? projects : [],
     },
-    revalidate:3600
+    revalidate: 60 * 5,
   };
 };

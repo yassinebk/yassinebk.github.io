@@ -2,8 +2,9 @@ import { ArrowDownIcon, ArrowUpIcon } from "@chakra-ui/icons";
 import {
   Button,
   Divider,
-  Flex, Text,
-  useColorModeValue
+  Flex,
+  Text,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import React, { useState } from "react";

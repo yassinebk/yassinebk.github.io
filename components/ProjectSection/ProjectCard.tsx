@@ -44,6 +44,7 @@ export const HomePageProjectCard: React.FC<ProjectCardProps> = ({
       className="project-card-homepage"
       variants={child}
       style={{
+        alignSelf: "stretch",
         margin: "16px 16px",
         backgroundColor: cardBg,
         border: border,
@@ -55,6 +56,7 @@ export const HomePageProjectCard: React.FC<ProjectCardProps> = ({
         paddingLeft: "31px",
         paddingRight: "16px",
         maxWidth: "472px",
+        height: "auto",
       }}
     >
       <Box>

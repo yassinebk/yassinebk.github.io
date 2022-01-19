@@ -50,7 +50,6 @@ const code = ({ node, inline, className, children, ...props }) => {
 };
 
 const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
-  console.log("here post inside blog post", typeof post);
   const dateColor = useColorModeValue("lightSecondary", "darkSecondary");
 
   const textColor = useColorModeValue("#536073", "#ADCEFF");
@@ -139,7 +138,6 @@ export const getStaticPaths = async () => {
       params: { slug: post.attributes.slug }, //Generating paths with [slug] subs
     };
   });
-  console.log("paths", paths);
   return {
     paths,
     fallback: true,
@@ -148,7 +146,6 @@ export const getStaticPaths = async () => {
 
 export async function getStaticProps({ params }) {
   const post = await getPost(params.slug);
-  console.log("post for get static props", typeof post);
 
   if (!post) {
     return {

@@ -2,11 +2,11 @@ import { fetchAPI } from "./api";
 import qs from "qs";
 
 const query = qs.stringify(
-    {
-        populate: "*",
-        sort:['title:asc']
-    },
-    
+  {
+    populate: "*",
+    sort: ["title:asc"],
+  },
+
   {
     encodeValuesOnly: true,
   }
@@ -14,5 +14,7 @@ const query = qs.stringify(
 
 export const getAllTags = async () => {
   const tags = await fetchAPI(`tags?${query}`).then((r) => r.data);
-  return tags;
+  return tags.filter((t) => {
+    return t.attributes.posts.data.length !== 0;
+  });
 };
