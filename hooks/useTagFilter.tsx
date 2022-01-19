@@ -9,6 +9,7 @@ export const useTagFilter = (initialFilter: string[] = [], options) => {
   const resetTagFilter = () => {
     setTagFilter(initialFilter);
 
+  }
   const removeTag = (short: string) => {
     setTagFilter(tagFilter.filter((t) => t !== short));
   };
