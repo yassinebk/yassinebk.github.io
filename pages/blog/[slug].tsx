@@ -79,7 +79,7 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
           <Skeleton height="5vh" w="70vw" />
         </VStack>
       ) : (
-        <VStack alignItems="center" maxW="900px">
+        <VStack alignItems="center" maxW="1000px" mx="auto">
           <Heading color={textColor} fontSize={["3xl", "4xl", "6xl", "7xl"]}>
             {post.attributes.title}
           </Heading>
