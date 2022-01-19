@@ -73,15 +73,17 @@ export const ProjectSection: React.FC<ProjectSectionProps> = ({ projects }) => {
             </>
           ))}
         </motion.div>
-        <motion.div layoutId="button" layout>
-          <Button
-            border={border}
-            rightIcon={allVisible ? <ArrowUpIcon /> : <ArrowDownIcon />}
-            onClick={toggleViewMore}
-          >
-            <Text>View More</Text>
-          </Button>
-        </motion.div>
+        {projects.length>3&&
+          <motion.div layoutId="button" layout>
+            <Button
+              border={border}
+              rightIcon={allVisible ? <ArrowUpIcon /> : <ArrowDownIcon />}
+              onClick={toggleViewMore}
+            >
+              <Text>View More</Text>
+            </Button>
+          </motion.div>
+        }
       </Flex>
       <Divider />
     </>
