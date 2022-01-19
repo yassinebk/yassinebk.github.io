@@ -24,6 +24,7 @@ const Layout: React.FC<LayoutProps> = ({
           name="description"
           content="Yassine Belkhadem Portfolio Website"
         />
+        <meta name="google-site-verification" content="8uYSPvcdlfOzE8ienPTU-uSpjLTnUIyRKDOBDnlzWmg" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Navbar />
