@@ -129,7 +129,9 @@ export const getStaticPaths = async () => {
 };
 
 export async function getStaticProps({ params }) {
+  console.log('get static post')
   const post = await getPost(params.slug);
+  console.log(post)
 
   if (!post) {
     return {
