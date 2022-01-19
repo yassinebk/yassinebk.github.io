@@ -108,6 +108,7 @@ export const HomePageProjectCard: React.FC<ProjectCardProps> = ({
       <Box h="10px" />
       <Center
         borderRadius={2}
+        justifySelf="flex-end"
         h="full"
         minH="320px"
         maxH="320px"
