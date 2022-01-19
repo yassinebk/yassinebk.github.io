@@ -9,7 +9,7 @@ import {
   Skeleton,
   Text,
   useColorModeValue,
-  VStack
+  VStack,
 } from "@chakra-ui/react";
 import Image from "next/image";
 import NextLink from "next/link";
@@ -22,7 +22,7 @@ import {
   Header2,
   Header3,
   Header4,
-  Header5
+  Header5,
 } from "../../components/HeaderRenderer";
 import Layout from "../../components/Layout";
 import { Tag } from "../../components/Tag";
@@ -79,7 +79,7 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
           <Skeleton height="5vh" w="70vw" />
         </VStack>
       ) : (
-        <VStack alignItems="center">
+        <VStack alignItems="center" maxW="900px">
           <Heading color={textColor} fontSize={["3xl", "4xl", "6xl", "7xl"]}>
             {post.attributes.title}
           </Heading>
