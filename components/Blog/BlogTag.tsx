@@ -17,7 +17,6 @@ export const BlogTag: React.FC<BlogTagsProps> = ({
 }) => {
   const { inversedBgColor } = useThemeBackground();
   const { inversedTextColor } = useThemeText();
-  console.log(activated)
   return (
     <HStack
       onClick={onClick}

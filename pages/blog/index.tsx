@@ -170,8 +170,6 @@ const BlogPage: React.FC<BlogProps> = ({ posts, tags }) => {
 export default BlogPage;
 
 export const getStaticProps = async () => {
-  console.log(process.env.NEXT_PUBLIC_STRAPI_API_TOKEN)
-  console.log(process.env.NEXT_PUBLIC_STRAPI_API_URL)
   const posts = await getAllPosts();
   generateSiteMap(posts);
   const tags = await getAllTags();

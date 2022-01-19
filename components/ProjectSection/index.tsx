@@ -18,7 +18,6 @@ interface ProjectSectionProps {
 }
 
 export const ProjectSection: React.FC<ProjectSectionProps> = ({ projects }) => {
-  console.log(projects);
   const border = useColorModeValue("1px solid #24313A", "0px solid");
   const style = {
     minHeight: "75vh",

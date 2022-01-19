@@ -6,7 +6,8 @@ export const useTagFilter = (initialFilter: string[] = [], options) => {
     if (options.includes(option)) setTagFilter([...tagFilter, option]);
   };
 
-  const resetTagFilter = () => { setTagFilter(initialFilter); console.log(tagFilter)}
+  const resetTagFilter = () => {
+    setTagFilter(initialFilter);
 
   const removeTag = (short: string) => {
     setTagFilter(tagFilter.filter((t) => t !== short));
