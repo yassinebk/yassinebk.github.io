@@ -50,42 +50,46 @@ export const ProjectSection: React.FC<ProjectSectionProps> = ({ projects }) => {
   };
   return (
     <>
-      <Flex {...(style as any)} px={[4]}>
-        <SectionHeading>Projects</SectionHeading>
-        <motion.div
-          layout
-          variants={parent}
-          initial="hidden"
-          animate="show"
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            width: "100vw",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {projects.slice(0, 6).map((project, index) => (
-            <>
-              {((!allVisible && index < 3) || allVisible) && (
-                <HomePageProjectCard key={index} project={project} />
-              )}
-            </>
-          ))}
-        </motion.div>
-        {projects.length>3&&
-          <motion.div layoutId="button" layout>
-            <Button
-              border={border}
-              rightIcon={allVisible ? <ArrowUpIcon /> : <ArrowDownIcon />}
-              onClick={toggleViewMore}
+      {projects.length !== 0 && (
+        <>
+          <Flex {...(style as any)} px={[4]}>
+            <SectionHeading>Projects</SectionHeading>
+            <motion.div
+              layout
+              variants={parent}
+              initial="hidden"
+              animate="show"
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                width: "100vw",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
             >
-              <Text>View More</Text>
-            </Button>
-          </motion.div>
-        }
-      </Flex>
-      <Divider />
+              {projects.slice(0, 6).map((project, index) => (
+                <>
+                  {((!allVisible && index < 3) || allVisible) && (
+                    <HomePageProjectCard key={index} project={project} />
+                  )}
+                </>
+              ))}
+            </motion.div>
+            {projects.length > 3 && (
+              <motion.div layoutId="button" layout>
+                <Button
+                  border={border}
+                  rightIcon={allVisible ? <ArrowUpIcon /> : <ArrowDownIcon />}
+                  onClick={toggleViewMore}
+                >
+                  <Text>View More</Text>
+                </Button>
+              </motion.div>
+            )}
+          </Flex>
+          <Divider />
+        </>
+      )}
     </>
   );
 };
