@@ -1,22 +1,46 @@
-import React from "react";
+import rangeParser from "parse-numeric-range";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import nord from "react-syntax-highlighter/dist/cjs/prism";
-type Props = {
-  language: string;
-  value: string;
+import { nord } from "react-syntax-highlighter/dist/cjs/styles/prism";
+
+const SyntaxHighlight: object = {
+  code({ node, inline, className, ...props }) {
+    // Set code language declared in code block: ```lang
+    const match = /language-(\w+)/.exec(className || "");
+
+    // Check if we have metadata
+    const hasMeta = node?.data?.meta;
+
+    // Highlight lines declared in code block: ```lang {2,4-6}
+    const applyHighlights: any = (applyHighlights: any) => {
+      if (hasMeta) {
+        const RE = /{([\d,-]+)}/;
+        const metadata = node.data.meta?.replace(/\s/g, "");
+        const strlineNumbers = RE.test(metadata) ? RE.exec(metadata)[1] : "0";
+        const highlightLines = rangeParser(strlineNumbers);
+        const highlight = highlightLines;
+        const data: string = highlight.includes(applyHighlights)
+          ? "highlight"
+          : null;
+        return { data };
+      } else {
+        return {};
+      }
+    };
+    return !inline && match ? (
+      <SyntaxHighlighter
+        style={nord}
+        language={match[1]}
+        PreTag="div"
+        className="codeStyle"
+        showLineNumbers={true}
+        wrapLines={true}
+        useUnlineStyles={true}
+        {...props}
+      />
+    ) : (
+      <code className={className} {...props} />
+    );
+  },
 };
 
-const CodeBlock: React.FC<Props> = ({ language, value }) => {
-  return (
-    <SyntaxHighlighter
-      language={language}
-      style={nord}
-      wrapLines={true}
-      showLineNumbers
-    >
-      {value}
-    </SyntaxHighlighter>
-  );
-};
-
-export default CodeBlock;
+export default SyntaxHighlight;

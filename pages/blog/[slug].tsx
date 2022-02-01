@@ -16,7 +16,7 @@ import NextLink from "next/link";
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
-import CodeBlock from "../../components/CodeBlock";
+import SyntaxHighlight from "../../components/CodeBlock";
 import {
   Header1,
   Header2,
@@ -33,21 +33,6 @@ import "../../styles/blogPost.module.css";
 interface BlogPostProps {
   post: any;
 }
-
-const code = ({ node, inline, className, children, ...props }) => {
-  const match = /language-(\w+)/.exec(className || "");
-  return !inline && match ? (
-    <CodeBlock
-      value={String(children).replace(/\n$/, "")}
-      language={match[1]}
-      {...props}
-    />
-  ) : (
-    <code className={className} {...props}>
-      {children}
-    </code>
-  );
-};
 
 const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
   const dateColor = useColorModeValue("lightSecondary", "darkSecondary");
@@ -120,14 +105,6 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
                 h3: Header3,
                 h4: Header4,
                 h5: Header5,
-                code,
-                li: (props) => (
-                  <HStack alignItems="center" my={1}>
-                    <Box w="1" h="1" rounded="full" bgColor="#8CB0CB" mr={1} />
-                    <Text>{props.children}</Text>
-                  </HStack>
-                ),
-
                 img: (props) => {
                   return (
                     <VStack alignItems="center" my={12}>
@@ -144,10 +121,8 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
                     </VStack>
                   );
                 },
+                ...SyntaxHighlight,
               }}
-
-              // transformLinkUri={}
-              // transformImageUri={}
             >
               {post.attributes.content}
             </ReactMarkdown>

@@ -131,3 +131,15 @@ body::-webkit-scrollbar-thumb {
   font-display: swap;
   src: url("/fonts/Inversionz_Unboxed.ttf");
 }
+
+
+
+code {
+  transform: translateZ(0);
+  min-width: 100%;
+  float: left;
+}
+
+code > span {
+  display: block;
+}

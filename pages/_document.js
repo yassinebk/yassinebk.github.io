@@ -15,6 +15,10 @@ class Document extends NextDocument {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true"/>
         <link href="https://fonts.googleapis.com/css2?family=Iceland&family=Sen:wght@400;700;800&display=swap" rel="stylesheet"/>
         <link href="/fonts/Inversionz_Unboxed.ttf"/>
+          <link
+            rel="stylesheet"
+            href="https://unpkg.com/dracula-prism/dist/css/dracula-prism.css"
+          ></link>
         </Head>
         <body>
           <Main />
