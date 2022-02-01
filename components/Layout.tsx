@@ -9,11 +9,15 @@ import { SideLinks } from "./SideLinks";
 interface LayoutProps {
   title: string;
   isFooterPresent?: boolean;
+  description?: string;
+  imageLink?: string;
 }
 
 const Layout: React.FC<LayoutProps> = ({
   children,
   title,
+  description,
+  imageLink,
   isFooterPresent = true,
 }) => {
   return (
@@ -22,9 +26,23 @@ const Layout: React.FC<LayoutProps> = ({
         <title>{title}</title>
         <meta
           name="description"
-          content="Yassine Belkhadem Portfolio Website"
+          content={
+            description ? description : "Yassine Belkhadem Portfolio Website"
+          }
+          key="desc"
         />
-        <meta name="google-site-verification" content="8uYSPvcdlfOzE8ienPTU-uSpjLTnUIyRKDOBDnlzWmg" />
+        <meta property="og:title" content={title} />
+        <meta
+          property="og:description"
+          content={
+            description ? description : "Yassine Belkhadem Portfolio Website"
+          }
+        />
+        {imageLink && <meta property="og:image" content={imageLink} />}
+        <meta
+          name="google-site-verification"
+          content="8uYSPvcdlfOzE8ienPTU-uSpjLTnUIyRKDOBDnlzWmg"
+        />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Navbar />

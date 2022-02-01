@@ -43,7 +43,11 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
   }
 
   return (
-    <Layout title={post.attributes.title}>
+    <Layout
+      title={post.attributes.title}
+      description={post.attributs.content.slice(30)}
+      imageLink={post.attributes.coverImage.data.attributes.formats.small.url}
+    >
       <NextLink href="/blog" passHref>
         <Box ml="10%">
           <Link display="flex" flexDir="row" alignItems="center">
