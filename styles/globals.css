@@ -132,8 +132,6 @@ body::-webkit-scrollbar-thumb {
   src: url("/fonts/Inversionz_Unboxed.ttf");
 }
 
-
-
 code {
   transform: translateZ(0);
   min-width: 100%;
@@ -142,4 +140,17 @@ code {
 
 code > span {
   display: block;
+}
+
+.codeStyle::-webkit-scrollbar-track {
+  background: #eceef1; /* color of the tracking area */
+}
+
+.codeStyle::-webkit-scrollbar-thumb {
+  background-color: #25313a; /* color of the scroll thumb */
+  border-radius: 5px; /* roundness of the scroll thumb */
+  border: 1px solid #293640; /* creates padding around scroll thumb */
+}
+.codeStyle::-webkit-scrollbar {
+  width: 12px; /* width of the entire scrollbar */
 }
