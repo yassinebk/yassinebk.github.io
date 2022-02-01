@@ -149,7 +149,7 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
                       )}
                       <VStack
                         my={12}
-                        mx={zoomed ? "auto" : 12}
+                        mx={zoomed ? "auto" : 1}
                         maxW={"1200px"}
                         maxH="80vh"
                       >
