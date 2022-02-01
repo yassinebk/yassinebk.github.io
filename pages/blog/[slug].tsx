@@ -1,10 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
-import { ChevronLeftIcon } from "@chakra-ui/icons";
+import { ChevronLeftIcon, CloseIcon } from "@chakra-ui/icons";
 import {
   Box,
   Divider,
   Heading,
   HStack,
+  IconButton,
   Link,
   Skeleton,
   Text,
@@ -13,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import Image from "next/image";
 import NextLink from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
 import SyntaxHighlight from "../../components/CodeBlock";
@@ -26,6 +27,7 @@ import {
 } from "../../components/HeaderRenderer";
 import Layout from "../../components/Layout";
 import { Tag } from "../../components/Tag";
+import { useThemeBackground, useThemeText } from "../../hooks/styleHooks";
 import { getAllPosts } from "../../lib/getAllPost";
 import { getPost } from "../../lib/getPost";
 import "../../styles/blogPost.module.css";
@@ -45,7 +47,7 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
   return (
     <Layout
       title={post.attributes.title}
-      description={post.attributs.content.slice(30)}
+      description={post.attributes.content.slice(30)}
       imageLink={post.attributes.coverImage.data.attributes.formats.small.url}
     >
       <NextLink href="/blog" passHref>
@@ -69,6 +71,7 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
         </VStack>
       ) : (
         <VStack
+          position="relative"
           alignItems="center"
           maxW="1000px"
           mx={["4px", "4px", "4px", "auto"]}
@@ -110,18 +113,61 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
                 h4: Header4,
                 h5: Header5,
                 img: (props) => {
+                  // eslint-disable-next-line react-hooks/rules-of-hooks
+                  const [zoomed, setZoom] = useState(false);
+                  // eslint-disable-next-line react-hooks/rules-of-hooks
+                  const { inversedTextColor } = useThemeText();
+                  // eslint-disable-next-line react-hooks/rules-of-hooks
+                  const { bgColor } = useThemeBackground();
                   return (
-                    <VStack alignItems="center" my={12}>
-                      <img src={props.src} alt={props.alt} />
-                      <Text
-                        colorScheme="blackAlpha"
-                        alignSelf="center"
-                        mx="auto"
-                        w="fit-content"
-                        textAlign="center"
+                    <VStack
+                      bgColor={zoomed ? "blackAlpha.400" : "transparent"}
+                      alignItems="center"
+                      my={zoomed ? "auto" : 12}
+                      onClick={() => setZoom(!zoomed)}
+                      position={zoomed ? "fixed" : "inherit"}
+                      backdropBlur={zoomed ? "2xl" : "none"}
+                      zIndex={4}
+                      mx="auto"
+                      width={zoomed ? "100vw" : "auto"}
+                      height={zoomed ? "100vh" : "auto"}
+                      left={0}
+                      bottom={0}
+                      translateY={"50%"}
+                      display="flex"
+                      justifyContent="center"
+                    >
+                      {zoomed && (
+                        <IconButton
+                          size="sm"
+                          bgColor={bgColor}
+                          color={textColor}
+                          aria-label="close image"
+                          icon={<CloseIcon />}
+                          onClick={() => setZoom(false)}
+                        />
+                      )}
+                      <VStack
+                        my={12}
+                        mx={zoomed ? "auto" : 12}
+                        maxW={"1200px"}
+                        maxH="80vh"
                       >
-                        {props.alt}
-                      </Text>
+                        <img
+                          src={props.src}
+                          alt={props.alt}
+                          style={{ height: "auto", width: "auto" }}
+                        />
+                        <Text
+                          colorScheme="blackAlpha"
+                          alignSelf="center"
+                          mx="auto"
+                          w="fit-content"
+                          textAlign="center"
+                        >
+                          {props.alt}
+                        </Text>
+                      </VStack>
                     </VStack>
                   );
                 },
