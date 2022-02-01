@@ -123,3 +123,11 @@ body::-webkit-scrollbar-thumb {
   transform: scale(0.8);
   opacity: 0.9;
 }
+
+@font-face {
+  font-family: "Inversionz Unboxed";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/Inversionz_Unboxed.ttf");
+}

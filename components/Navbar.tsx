@@ -49,7 +49,7 @@ export const Navbar: React.FC<NavbarProps> = ({}) => {
             }}
             cursor="pointer"
             id="navbar-header"
-            fontFamily={"Inversionz Unboxed"}
+            fontFamily={"display"}
             pl={[1, 2, 0]}
             textAlign={["center", "center", "center", "left"]}
             fontWeight={"thin"}

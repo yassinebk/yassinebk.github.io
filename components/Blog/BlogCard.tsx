@@ -42,16 +42,17 @@ export const BlogCard: React.FC<ProjectCardProps> = ({ post, index }) => {
         onHoverEnd={() => setScale(1)}
         style={{
           cursor: "pointer",
+          alignSelf: "stretch",
           margin: "8px 8px",
           maxWidth: "600px",
           minWidth: "300px",
           minHeight: "400px",
-          height: "fit-content",
           width: "100%",
           backgroundColor: cardBg,
           border: border,
           borderRadius: "5px",
           flexDirection: "column",
+          display: "flex",
           paddingTop: "2%",
           paddingBottom: "2%",
           paddingLeft: "4%",
@@ -59,7 +60,8 @@ export const BlogCard: React.FC<ProjectCardProps> = ({ post, index }) => {
         }}
       >
         <Center h="300px" w="100%" mb="4" borderRadius={3}>
-          <Image alt={post.coverImage.data.attributes.name}
+          <Image
+            alt={post.coverImage.data.attributes.name}
             src={post.coverImage.data.attributes.formats.large.url}
             width={post.coverImage.data.attributes.formats.large.width}
             height={post.coverImage.data.attributes.formats.large.height}

@@ -5,6 +5,7 @@ const theme = extendTheme({
   fonts: {
     heading: "Iceland",
     body: "Iceland",
+    display: "Inversionz Unboxed",
   },
 
   styles: {
