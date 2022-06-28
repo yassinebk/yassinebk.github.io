@@ -1,4 +1,4 @@
-import { Heading, useColorModeValue, Text } from "@chakra-ui/react";
+import { Heading, useColorModeValue, Text, Link } from "@chakra-ui/react";
 
 export const Header1 = (props) => {
   const h1Color = useColorModeValue("#22223b", "#d8e2dc");
@@ -38,5 +38,6 @@ export const Header5 = (props) => (
 export const Header6 = (props) => <Heading as="h6">{props.children}</Heading>;
 
 export const BoldText = (props) => <Text as="span" fontWeight="700" color="red.400">{props.children}</Text>
+export const LinkTag = (props) =>  <Link as="a" fontWeight="700" color="orange.400" href={props.href}>{props.children}</Link>;
 
 export const Paragraph = (props) => <Text>{props.children}</Text>;

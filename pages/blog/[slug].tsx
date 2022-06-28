@@ -25,6 +25,7 @@ import {
   Header4,
   Header5,
   BoldText,
+  LinkTag,
 } from "../../components/HeaderRenderer";
 import Layout from "../../components/Layout";
 import { Tag } from "../../components/Tag";
@@ -113,7 +114,8 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
                 h3: Header3,
                 h4: Header4,
                 h5: Header5,
-                "strong":BoldText,
+                "strong": BoldText,
+                "a":LinkTag,
                 img: (props) => {
                   // eslint-disable-next-line react-hooks/rules-of-hooks
                   const [zoomed, setZoom] = useState(false);
