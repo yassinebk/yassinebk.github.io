@@ -1,14 +1,11 @@
 import {
-  HStack,
-  Progress,
   VStack,
   Text,
   useColorModeValue,
   Center,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import React, { useEffect, useRef } from "react";
-import ParallaxContainer from "../Parallax";
+import React from "react";
 import { CustomProgress } from "../CustomProgress";
 
 interface SkillBarProps {
@@ -28,12 +25,12 @@ export const SkillBar: React.FC<SkillBarProps> = ({
         display: "flex",
         flexDirection: "row",
         alignItems: "flex-end",
-        justifyContent:'space-between',
-        maxWidth:'547px'
+        justifyContent: 'space-between',
+        maxWidth: '547px'
       }}
     >
-          <VStack width={["65px","65px","65px","70px"]} >
-        <Text fontSize={["xl", "xl", "xl","xl", "2xl"]}>{skillName}</Text>
+      <VStack width={["65px", "65px", "65px", "70px"]} >
+        <Text fontSize={["xl", "xl", "xl", "xl", "2xl"]}>{skillName}</Text>
         <Text fontSize="2xl" color={numberColor}>
           {skillLevel}
         </Text>

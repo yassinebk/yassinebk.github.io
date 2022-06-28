@@ -59,7 +59,7 @@ export const BlogCard: React.FC<ProjectCardProps> = ({ post, index }) => {
           paddingRight: "4%",
         }}
       >
-        <Center h="300px" w="100%" mb="4" borderRadius={3}>
+        <Center h="300px" w="100%" mb="4" borderRadius={3} overflow="hidden">
           <Image
             alt={post.coverImage.data.attributes.name}
             src={post.coverImage.data.attributes.formats.large.url}
