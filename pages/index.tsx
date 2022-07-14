@@ -8,7 +8,7 @@ import { getAllProjects } from "../lib/getAllProjects";
 
 export default function Home({ projects }) {
   return (
-    <Layout title="YB - Porfolio">
+    <Layout title="YB - Porfolio" description="Yassine Belkhadem is a software engineering student, passionated by computers and all the services they can offer. This portfolio is a showcase for projects he has done and skills he has learnt during his still going journey. #programming #cybersecurity ">
       <PresentationSection />
       <GetToKnowSection />
       <SkillSection />
