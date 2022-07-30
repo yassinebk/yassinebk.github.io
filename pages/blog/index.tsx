@@ -10,6 +10,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import React from "react";
+import { FaRegSadTear } from "react-icons/fa";
 import { BlogCard } from "../../components/Blog/BlogCard";
 import { BlogHeading } from "../../components/Blog/BlogHeading";
 import { BlogTag } from "../../components/Blog/BlogTag";
@@ -20,8 +21,6 @@ import { useTagFilter } from "../../hooks/useTagFilter";
 import { getAllPosts } from "../../lib/getAllPost";
 import { getAllTags } from "../../lib/getAllTags";
 import { generateSiteMap } from "../../utils/createSitemap";
-import { FaRegSadTear } from "react-icons/fa";
-import { useThemeText } from "../../hooks/styleHooks";
 
 interface BlogProps {
   posts: any;

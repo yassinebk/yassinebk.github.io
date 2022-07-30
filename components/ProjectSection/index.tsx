@@ -71,7 +71,7 @@ export const ProjectSection: React.FC<ProjectSectionProps> = ({ projects }) => {
                   {((!allVisible && index < 3) || allVisible) && (
                     <HomePageProjectCard
                       project={project}
-                      key={project.attributes.title}
+                      key={project.attributes.title + index}
                     />
                   )}
                 </>

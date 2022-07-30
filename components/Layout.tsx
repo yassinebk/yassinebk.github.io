@@ -24,6 +24,7 @@ const Layout: React.FC<LayoutProps> = ({
     <>
       <Head>
         <title>{title}</title>
+        <link rel="preload" as="font" href=""></link>
         <meta
           name="description"
           content={

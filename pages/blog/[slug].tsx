@@ -2,6 +2,7 @@
 import { ChevronLeftIcon, CloseIcon } from "@chakra-ui/icons";
 import {
   Box,
+  Code,
   Divider,
   Heading,
   HStack,
@@ -19,12 +20,13 @@ import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
 import SyntaxHighlight from "../../components/CodeBlock";
 import {
+  BoldText,
   Header1,
   Header2,
   Header3,
   Header4,
   Header5,
-  BoldText,
+  HR,
   LinkTag,
 } from "../../components/HeaderRenderer";
 import Layout from "../../components/Layout";
@@ -114,8 +116,10 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
                 h3: Header3,
                 h4: Header4,
                 h5: Header5,
-                "strong": BoldText,
-                "a":LinkTag,
+                strong: BoldText,
+                p: Text,
+                hr: HR,
+                a: LinkTag,
                 img: (props) => {
                   // eslint-disable-next-line react-hooks/rules-of-hooks
                   const [zoomed, setZoom] = useState(false);
@@ -176,6 +180,8 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
                   );
                 },
                 ...SyntaxHighlight,
+
+                // code: Code,
               }}
             >
               {post.attributes.content}

@@ -154,3 +154,23 @@ code > span {
 .codeStyle::-webkit-scrollbar {
   width: 12px; /* width of the entire scrollbar */
 }
+
+ul > li > ul {
+  margin-left: 3rem;
+}
+ul > li > ul > li > ul > li > a {
+  color: #f5cead !important;
+}
+
+p > span {
+  font-size: 1.2rem;
+}
+
+code {
+  font-weight: 200;
+  font-style: italic;
+  font-size: 0.7rem;
+  margin-top: 0.7rem;
+  margin-bottom: 0.7rem;
+  color: #b36ad1;
+}
