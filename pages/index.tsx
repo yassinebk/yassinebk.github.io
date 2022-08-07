@@ -8,7 +8,7 @@ import { getAllProjects } from "../lib/getAllProjects";
 
 export default function Home({ projects }) {
   return (
-    <Layout title="YB - Porfolio" description="Yassine Belkhadem is a software engineering student, passionated by computers and all the services they can offer. This portfolio is a showcase for projects he has done and skills he has learnt during his still going journey. #programming #cybersecurity ">
+    <Layout title="YB - Porfolio" description="Yassine Belkhadem is a software engineering student, passionated by computers and all the services they can offer. This portfolio is a showcase for projects he has done and skills he has learnt during his still going journey. #programming #cybersecurity " imageLink="https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659869790/portfolio_view.png">
       <PresentationSection />
       <GetToKnowSection />
       <SkillSection />
