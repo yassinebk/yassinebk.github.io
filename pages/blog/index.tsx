@@ -60,7 +60,10 @@ const BlogPage: React.FC<BlogProps> = ({ posts, tags }) => {
 
   const textColor = useColorModeValue("cardDark2", "darkSecondary");
   return (
-    <Layout title={"YB - Blog"} isFooterPresent={false}>
+    <Layout title={"YB - Blog"} isFooterPresent={false} imageLink="https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659869790/portfolio_view.png"
+    description={posts.map(p=>p.attributes.title).join(" - ")}
+
+    >
       {posts.length == 0 ? (
         <VStack vh="55vh">
           <FaRegSadTear style={{ fontSize: 30, height: 60, width: 60 }} />
