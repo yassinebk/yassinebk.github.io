@@ -77,7 +77,7 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
         <VStack
           position="relative"
           alignItems="center"
-          maxW="1000px"
+          maxW="1200px"
           mx={["4px", "4px", "4px", "auto"]}
         >
           <Heading
@@ -124,8 +124,6 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
                   // eslint-disable-next-line react-hooks/rules-of-hooks
                   const [zoomed, setZoom] = useState(false);
                   // eslint-disable-next-line react-hooks/rules-of-hooks
-                  const { inversedTextColor } = useThemeText();
-                  // eslint-disable-next-line react-hooks/rules-of-hooks
                   const { bgColor } = useThemeBackground();
                   return (
                     <VStack
@@ -164,7 +162,7 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
                         <img
                           src={props.src}
                           alt={props.alt}
-                          style={{ height: "auto", width: "auto" }}
+                          style={{ height: "auto", width: "auto", scale: 1.2 }}
                         />
                         <Text
                           colorScheme="blackAlpha"
