@@ -163,7 +163,7 @@ const BlogPage: React.FC<BlogProps> = ({ posts, tags }) => {
               overflowX="hidden"
               wrap="wrap"
               flexDir="row"
-              justifyContent="flex-start"
+              justifyContent="space-around"
               scrollBehavior="smooth"
               px="4"
             >
