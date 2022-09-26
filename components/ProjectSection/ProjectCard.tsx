@@ -62,16 +62,16 @@ export const HomePageProjectCard: React.FC<ProjectCardProps> = ({
     >
       <Box>
         <Heading as="h1" fontSize="3xl">
-          {project.attributes.title}
+          {project.title}
         </Heading>
         <Text color={dateColor} as="h4">
-          {project.attributes.date}
+          {project.date}
         </Text>
       </Box>
       <Box h="12px" />
       <HStack wrap="wrap" rowGap={2}>
-        {project.attributes.tags.data.map((t) => (
-          <Tag label={t.attributes.title} key={t.attributes.short} />
+        {project.tags.map((t) => (
+          <Tag label={t} key={t} />
         ))}
       </HStack>
       <Box h="20px" />
@@ -84,22 +84,14 @@ export const HomePageProjectCard: React.FC<ProjectCardProps> = ({
       <HStack spacing={8}>
         <HStack>
           <AiFillGithub />
-          <Link
-            fontSize="xl"
-            color={linkColor}
-            href={project.attributes.githubLink}
-          >
+          <Link fontSize="xl" color={linkColor} href={project.githubLink}>
             Github Link
           </Link>
         </HStack>
-        {project.attributes.livePreview && (
+        {project.livePreview && (
           <HStack>
             <LinkIcon />
-            <Link
-              fontSize="xl"
-              color={linkColor}
-              href={project.attributes.livePreview}
-            >
+            <Link fontSize="xl" color={linkColor} href={project.livePreview}>
               Live Preview
             </Link>
           </HStack>
@@ -117,14 +109,10 @@ export const HomePageProjectCard: React.FC<ProjectCardProps> = ({
         alignSelf="center"
       >
         <Image
-          alt={project.attributes.coverImage.data.attributes.name}
-          src={project.attributes.coverImage.data.attributes.formats.large.url}
-          width={
-            project.attributes.coverImage.data.attributes.formats.large.width
-          }
-          height={
-            project.attributes.coverImage.data.attributes.formats.large.height
-          }
+          alt={project.title}
+          src={project.coverImageURL}
+          width={project.coverImageWidth}
+          height={project.coverImageHeight}
         />
       </Center>
     </motion.div>

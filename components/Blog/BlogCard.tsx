@@ -44,7 +44,7 @@ export const BlogCard: React.FC<ProjectCardProps> = ({ post, index }) => {
           cursor: "pointer",
           alignSelf: "stretch",
           margin: "8px 8px",
-          maxWidth: "600px",
+          maxWidth: "500px",
           minWidth: "300px",
           minHeight: "400px",
           width: "100%",
@@ -53,30 +53,39 @@ export const BlogCard: React.FC<ProjectCardProps> = ({ post, index }) => {
           borderRadius: "5px",
           flexDirection: "column",
           display: "flex",
-          paddingTop: "2%",
           paddingBottom: "2%",
-          paddingLeft: "4%",
-          paddingRight: "4%",
         }}
       >
-        <Center h="300px" w="100%" mb="4" borderRadius={3} overflow="hidden">
+        <Center
+          minHeight="50%"
+          maxH="500px"
+          w="100%"
+          mb="4"
+          borderRadius={3}
+          overflow="hidden"
+        >
           <Image
-            alt={post.coverImage.data.attributes.name}
-            src={post.coverImage.data.attributes.formats.large.url}
-            width={post.coverImage.data.attributes.formats.large.width}
-            height={post.coverImage.data.attributes.formats.large.height}
+            alt={post.title}
+            src={post.coverImageLarge}
+            width={700}
+            height={500}
           />
         </Center>
-        <HStack alignItems="center" justifyContent="space-between" height="40%">
+        <HStack
+          alignItems="center"
+          justifyContent="space-between"
+          height="40%"
+          px={"4%"}
+        >
           <Heading fontSize={["lg", "xl", "3xl", "3xl"]}>{post.title}</Heading>
           <Text color={dateColor} as="h4">
             {post.date}
           </Text>
         </HStack>
         <Box h="12px" />
-        <HStack>
-          {post.tags.data.map((t) => (
-            <Tag label={t.attributes.title} key={t.attributes.short} />
+        <HStack px={"4%"}>
+          {post.tags.map((t: string) => (
+            <Tag label={t} key={t} />
           ))}
         </HStack>
         <Box h="20px" />

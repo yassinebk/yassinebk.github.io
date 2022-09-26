@@ -2,7 +2,6 @@
 import { ChevronLeftIcon, CloseIcon } from "@chakra-ui/icons";
 import {
   Box,
-  Code,
   Divider,
   Heading,
   HStack,
@@ -13,8 +12,10 @@ import {
   useColorModeValue,
   VStack,
 } from "@chakra-ui/react";
+import fs from "fs";
 import Image from "next/image";
 import NextLink from "next/link";
+import path from "path";
 import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
@@ -31,10 +32,11 @@ import {
 } from "../../components/HeaderRenderer";
 import Layout from "../../components/Layout";
 import { Tag } from "../../components/Tag";
-import { useThemeBackground, useThemeText } from "../../hooks/styleHooks";
-import { getAllPosts } from "../../lib/getAllPost";
-import { getPost } from "../../lib/getPost";
+import { useThemeBackground } from "../../hooks/styleHooks";
 import "../../styles/blogPost.module.css";
+import { getDocBySlug } from "../../utils/getDocBySlug";
+import { fetchAPI } from "../../lib/api";
+import qs from "qs";
 
 interface BlogPostProps {
   post: any;
@@ -42,6 +44,7 @@ interface BlogPostProps {
 
 const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
   const dateColor = useColorModeValue("lightSecondary", "darkSecondary");
+  console.log(post);
 
   const textColor = useColorModeValue("#536073", "#ADCEFF");
   if (!post) {
@@ -50,9 +53,9 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
 
   return (
     <Layout
-      title={post.attributes.title}
-      description={post.attributes.content.slice(30)}
-      imageLink={post.attributes.coverImage.data.attributes.formats.small.url}
+      title={post.meta.title}
+      description={post.content.slice(30)}
+      imageLink={post.meta["cover-image-small"]}
     >
       <NextLink href="/blog" passHref>
         <Box ml="10%">
@@ -77,7 +80,7 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
         <VStack
           position="relative"
           alignItems="center"
-          maxW="1200px"
+          maxW="1300px"
           mx={["4px", "4px", "4px", "auto"]}
         >
           <Heading
@@ -85,29 +88,30 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
             fontSize={["3xl", "4xl", "6xl", "7xl"]}
             textAlign="center"
           >
-            {post.attributes.title}
+            {post.meta.title}
           </Heading>
-          <Text color={dateColor}>{post.attributes.date}</Text>
+          <Text color={dateColor}>{post.meta.date}</Text>
           <HStack wrap="wrap">
-            {post.attributes.tags.data.map((t) => (
-              <Tag label={t.attributes.title} key={t.attributes.short} />
+            {post.meta.tags.map((t: string) => (
+              <Tag label={t} key={t} />
             ))}
           </HStack>
           <Box h="32px" />
           <Box borderRadius={2} shadow="md" px={[8, 8, 10, 10]}>
             <Image
-              alt={post.attributes.coverImage.data.attributes.name}
-              src={post.attributes.coverImage.data.attributes.formats.large.url}
-              width={
-                post.attributes.coverImage.data.attributes.formats.large.width
-              }
-              height={
-                post.attributes.coverImage.data.attributes.formats.large.height
-              }
+              alt={post.meta.title + " cover image"}
+              src={post.meta["cover-image-large"]}
+              width={1200}
+              height={900}
             />
           </Box>
-          <Divider maxW="900px" my={12} />
-          <Box w="100%" maxW="800px" className="blogPost" px={[10, 10, 12, 12]}>
+          <Divider maxW="1200px" my={12} />
+          <Box
+            w="100%"
+            maxW="1300px"
+            className="blogPost"
+            px={[10, 10, 12, 12]}
+          >
             <ReactMarkdown
               remarkPlugins={[gfm]}
               components={{
@@ -156,7 +160,7 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
                       <VStack
                         my={12}
                         mx={zoomed ? "auto" : 1}
-                        maxW={"1200px"}
+                        maxW={"1300px"}
                         maxH="80vh"
                       >
                         <img
@@ -182,7 +186,7 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
                 // code: Code,
               }}
             >
-              {post.attributes.content}
+              {post.content}
             </ReactMarkdown>
           </Box>
         </VStack>
@@ -193,13 +197,15 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
 export default BlogPost;
 
 export const getStaticPaths = async () => {
-  const res = await getAllPosts();
+  console.log(process.cwd());
+  const files = fs.readdirSync(path.join(process.cwd(), "content", "posts"));
 
-  const paths = res.map((post) => {
+  const paths = files.map((filename) => {
     return {
-      params: { slug: post.attributes.slug }, //Generating paths with [slug] subs
+      params: { slug: filename }, //Generating paths with [slug] subs
     };
   });
+
   return {
     paths,
     fallback: true,
@@ -207,7 +213,16 @@ export const getStaticPaths = async () => {
 };
 
 export async function getStaticProps({ params }) {
-  const post = await getPost(params.slug);
+  const post = getDocBySlug(params.slug);
+
+  const query = qs.stringify(
+    {
+      populate: "*",
+    },
+    {
+      encodeValuesOnly: true,
+    }
+  );
 
   if (!post) {
     return {
@@ -217,9 +232,12 @@ export async function getStaticProps({ params }) {
       },
     };
   }
+
   return {
     props: {
-      post,
+      post: {
+        ...post,
+      },
     },
     revalidate: 10,
   };

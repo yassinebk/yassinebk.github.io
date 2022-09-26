@@ -18,7 +18,7 @@ export const Body: React.FC<BodyProps> = ({
       zIndex="base"
       position="relative"
     >
-      <Box minH="100px" height="20vh" id="navbar-placeholder" />
+      <Box minH="100px" height="16vh" id="navbar-placeholder" />
       {children}
 
       {isFooterPresent && (

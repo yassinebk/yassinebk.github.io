@@ -28,6 +28,7 @@ const SyntaxHighlight: object = {
     };
     return !inline && match ? (
       <SyntaxHighlighter
+        {...applyHighlights()}
         style={nord}
         language={match[1]}
         PreTag="div"
@@ -38,7 +39,7 @@ const SyntaxHighlight: object = {
         {...props}
       />
     ) : (
-      <code className={className} {...props} />
+      <code className={"inline-code"} {...props} />
     );
   },
 };

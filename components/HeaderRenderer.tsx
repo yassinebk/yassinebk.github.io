@@ -1,7 +1,7 @@
 import { Heading, useColorModeValue, Text, Link, Box } from "@chakra-ui/react";
 
 export const Header1 = (props) => {
-  const h1Color = useColorModeValue("#22223b", "#d8e2dc");
+  const h1Color = useColorModeValue("#B17BBA", "#A833B9");
   return (
     <Heading as="h1" color={h1Color} my={12} fontSize={"48px"} mt={14} mb={10}>
       {props.children}
@@ -10,7 +10,7 @@ export const Header1 = (props) => {
 };
 
 export const Header2 = (props) => {
-  const h2Color = useColorModeValue("#3d5a80", "#e0fbfc");
+  const h2Color = useColorModeValue("#FACE7E", "#F6AE2D");
   return (
     <Heading
       id={props.children[0].toLowerCase()}
@@ -19,7 +19,7 @@ export const Header2 = (props) => {
       my={6}
       fontSize="40px"
       fontFamily="Sen"
-      mt={12}
+      mt={24}
       mb={8}
     >
       {props.children}
@@ -44,7 +44,7 @@ export const Header3 = (props) => {
   );
 };
 
-export const Header4 = (props) => (
+export const Header4 = (props: any) => (
   <Heading
     as="h4"
     fontWeight="700"
@@ -56,35 +56,37 @@ export const Header4 = (props) => (
     {props.children}
   </Heading>
 );
-export const Header5 = (props) => (
-  <Heading as="h5" fontWeight="600" fontSize="22px" mt={6} mb={2}>
+export const Header5 = (props: any) => (
+  <Heading as="h5" fontWeight="600" fontSize="24px" mt={6} mb={2}>
     {props.children}
   </Heading>
 );
-export const Header6 = (props) => <Heading as="h6">{props.children}</Heading>;
+export const Header6 = (props: any) => (
+  <Heading as="h6">{props.children}</Heading>
+);
 
-export const BoldText = (props) => (
-  <Text as="span" fontWeight="700" color="red.400">
+export const BoldText = (props: any) => (
+  <Text as="span" fontWeight="700" color="red.400" fontSize="lg">
     {props.children}
   </Text>
 );
-export const LinkTag = (props) => (
+export const LinkTag = (props: any) => (
   <Link as="a" fontWeight="700" color="orange.400" href={props.href}>
     {props.children}
   </Link>
 );
 
-export const Paragraph = (props) => (
+export const Paragraph = (props: any) => (
   <Text lineHeight="1.2">{props.children}</Text>
 );
 
-export const Code = (props) => (
+export const Code = (_props: any) => (
   <Text fontWeight={"thin"} color="purple.400">
-    {props.children}
+    {_props.children}
   </Text>
 );
 
-export const HR = (props) => {
+export const HR = (_props: any) => {
   const h2Color = useColorModeValue("#3d5a80", "#e0fbfc");
   return <Box my="60px" h="1px" bgColor={h2Color} />;
 };

@@ -11,7 +11,7 @@ export function generateSiteMap(posts) {
        .map((post) => {
          return `
        <url>
-           <loc>${`${process.env.NEXT_PUBLIC_STRAPI_API_URL}/${post.attributes.slug}`}</loc>
+           <loc>${`${process.env.NEXT_PUBLIC_STRAPI_API_URL}/${post.slug}`}</loc>
        </url>
      `;
        })

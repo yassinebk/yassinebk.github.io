@@ -21,10 +21,11 @@ export const BlogTag: React.FC<BlogTagsProps> = ({
     <HStack
       onClick={onClick}
       justifyContent="space-between"
+      maxWidth="300px"
       w="100%"
       py="2"
-      bgColor={activated ?   inversedBgColor:"inherit"}
-      color={activated ?  inversedTextColor:"inherit" }
+      bgColor={activated ? inversedBgColor : "inherit"}
+      color={activated ? inversedTextColor : "inherit"}
       _hover={{
         bgColor: inversedBgColor,
         color: inversedTextColor,

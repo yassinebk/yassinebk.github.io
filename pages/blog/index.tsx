@@ -1,11 +1,8 @@
-import { DeleteIcon } from "@chakra-ui/icons";
 import {
   Box,
   Divider,
   Flex,
   Heading,
-  HStack,
-  IconButton,
   useColorModeValue,
   VStack,
 } from "@chakra-ui/react";
@@ -13,13 +10,11 @@ import React from "react";
 import { FaRegSadTear } from "react-icons/fa";
 import { BlogCard } from "../../components/Blog/BlogCard";
 import { BlogHeading } from "../../components/Blog/BlogHeading";
-import { BlogTag } from "../../components/Blog/BlogTag";
 import { Searchbar } from "../../components/Blog/Searchbar";
 import Layout from "../../components/Layout";
 import { useSearchFilter } from "../../hooks/useSearchFilter";
 import { useTagFilter } from "../../hooks/useTagFilter";
 import { getAllPosts } from "../../lib/getAllPost";
-import { getAllTags } from "../../lib/getAllTags";
 import { generateSiteMap } from "../../utils/createSitemap";
 
 interface BlogProps {
@@ -28,29 +23,20 @@ interface BlogProps {
 }
 
 const BlogPage: React.FC<BlogProps> = ({ posts, tags }) => {
-  const { tagFilter, resetTagFilter, toggleTag } = useTagFilter(
-    [],
-    tags.map((t) => t.attributes.short)
-  );
-  console.log(tags);
+  const { tagFilter, resetTagFilter, toggleTag } = useTagFilter([], tags);
   const { resetSearchFilter, searchFilter, updateSearchFilter } =
     useSearchFilter();
   const getPosts = () => {
     const tagFilteredPosts = posts.filter((p) => {
       for (let i = 0; i < tagFilter.length; i++) {
-        if (
-          !p.attributes.tags.data
-            .map((t) => t.attributes.short)
-            .includes(tagFilter[i])
-        )
-          return false;
+        if (!p.tags.includes(tagFilter[i])) return false;
       }
       return true;
     });
 
     return tagFilteredPosts.filter((post) => {
       return (
-        post.attributes.title
+        post.title
           .toString()
           .toLowerCase()
           .indexOf(searchFilter.toLowerCase()) > -1
@@ -60,9 +46,11 @@ const BlogPage: React.FC<BlogProps> = ({ posts, tags }) => {
 
   const textColor = useColorModeValue("cardDark2", "darkSecondary");
   return (
-    <Layout title={"YB - Blog"} isFooterPresent={false} imageLink="https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659869790/portfolio_view.png"
-    description={posts.map(p=>p.attributes.title).join(" - ")}
-
+    <Layout
+      title={"YB - Blog"}
+      isFooterPresent={false}
+      imageLink="https://res.cloudinary.com/dsdvvwb8v/image/upload/v1659869790/portfolio_view.png"
+      description={posts.map((p) => p.title).join(" - ")}
     >
       {posts.length == 0 ? (
         <VStack vh="55vh">
@@ -80,13 +68,16 @@ const BlogPage: React.FC<BlogProps> = ({ posts, tags }) => {
         </VStack>
       ) : (
         <>
+          <Box mx="auto">
+            <BlogHeading>Articles</BlogHeading>
+          </Box>
           <Searchbar
             updateSearchFilter={updateSearchFilter}
             searchFilter={searchFilter}
             resetSearchFilter={resetSearchFilter}
           />
-          <Box h="8" />
-          <Box
+          <Box h={8}></Box>
+          {/* <Box
             justifyItems="center"
             marginBottom={["60x", "60px", "60px", "120px", "0px"]}
             display={["flex", "flex", "flex", "flex", "grid"]}
@@ -106,8 +97,8 @@ const BlogPage: React.FC<BlogProps> = ({ posts, tags }) => {
             justifyContent="center"
             scrollBehavior="smooth"
             position="relative"
-          >
-            <VStack
+          > */}
+          {/* <VStack
               maxW="350px"
               gridColumnStart={[1, 1, 1, 1, 1]}
               gridColumnEnd={[2, 2, 2, 3, 3, 4]}
@@ -138,60 +129,51 @@ const BlogPage: React.FC<BlogProps> = ({ posts, tags }) => {
               >
                 {tags.map((t) => (
                   <BlogTag
-                    activated={tagFilter.includes(t.attributes.short)}
-                    label={t.attributes.title}
-                    key={t.attributes.short}
-                    numberOfArticles={
-                      t.attributes.posts ? t.attributes.posts.data.length : 0
-                    }
-                    onClick={() => toggleTag(t.attributes.short)}
+                    activated={tagFilter.includes(t)}
+                    label={t}
+                    key={t}
+                    numberOfArticles={0}
+                    onClick={() => toggleTag(t)}
                   />
                 ))}
               </Box>
-            </VStack>
-            <VStack
-              flexGrow={1}
-              px={1}
-              h="full"
-              gridColumnStart={[1, 1, 1, 3, 3, 4]}
-              gridColumnEnd={[2, 2, 2, 2, 13]}
-              w={["100vw", "100vw", "100%"]}
+            </VStack> */}
+          <VStack
+            flexGrow={1}
+            px={1}
+            h="full"
+            gridColumnStart={[1, 1, 1, 3, 3, 4]}
+            gridColumnEnd={[2, 2, 2, 2, 13]}
+            w={["100vw", "100vw", "100%"]}
+          >
+            <Divider />
+            <Flex
+              w="100%"
+              paddingBottom="24px"
+              className="scrollbar"
+              maxH={["100%", "100%", "100%", "100%", "55vh", "58vh"]}
+              // overflow={[
+              //   "hidden",
+              //   "hidden",
+              //   "hidden",
+              //   "hidden",
+              //   "scroll",
+              //   "scroll",
+              // ]}
+              overflowX="hidden"
+              wrap="wrap"
+              flexDir="row"
+              justifyContent="flex-start"
+              scrollBehavior="smooth"
+              px="4"
             >
-              <Box position="static">
-                <BlogHeading>Articles</BlogHeading>
-              </Box>
-              <Divider />
-              <Flex
-                w="100%"
-                paddingBottom="24px"
-                className="scrollbar"
-                maxH={["100%", "100%", "100%", "100%", "55vh", "58vh"]}
-                // overflow={[
-                //   "hidden",
-                //   "hidden",
-                //   "hidden",
-                //   "hidden",
-                //   "scroll",
-                //   "scroll",
-                // ]}
-                overflowX="hidden"
-                wrap="wrap"
-                flexDir="row"
-                justifyContent="flex-start"
-                scrollBehavior="smooth"
-                px="4"
-              >
-                {getPosts().map((p, i) => (
-                  <BlogCard
-                    key={p.attributes.slug}
-                    post={p.attributes}
-                    index={i}
-                  />
-                ))}
-              </Flex>
-              <Divider />
-            </VStack>
-          </Box>
+              {getPosts().map((p, i) => (
+                <BlogCard key={p.slug} post={p} index={i} />
+              ))}
+            </Flex>
+            <Divider />
+          </VStack>
+          {/* </Box> */}
         </>
       )}
     </Layout>
@@ -201,10 +183,9 @@ const BlogPage: React.FC<BlogProps> = ({ posts, tags }) => {
 export default BlogPage;
 
 export const getStaticProps = async () => {
-  const posts = await getAllPosts();
+  const { posts, tags } = await getAllPosts();
+
   generateSiteMap(posts);
-  const tags = await getAllTags();
-  generateSiteMap(tags);
   return {
     props: {
       tags,
