@@ -161,7 +161,7 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
                         my={12}
                         mx={zoomed ? "auto" : 1}
                         maxW={"1300px"}
-                        maxH="80vh"
+                        // maxH="80vh"
                       >
                         <img
                           src={props.src}
