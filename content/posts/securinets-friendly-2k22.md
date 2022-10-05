@@ -113,6 +113,8 @@ So let's understand what's `tx.origin` and `msg.sender`:
 - `tx.origin` is the address that started the transactions.( Called a function of a contract which calls the function from another contract client -> contract -> contract falls all under one transaction. The client here is the `tx.origin`.
 - `msg.sender` is the direct address of the one that is calling the function. So if we got contract1 -> contract2 -> contract3 where `->` is a function call. The contract3 will have as `msg.sender` value the address of the contract2 and `contract2` will have as `msg.sender` value the address of contract1.
 
+[Consensys Tx.origin](https://consensys.github.io/smart-contract-best-practices/development-recommendations/solidity-specific/tx-origin/)
+
 2. So let's craft a contract that works as an intermediate to calling the `sendFlag` function.
 
 ```js
