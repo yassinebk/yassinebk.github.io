@@ -499,4 +499,4 @@ It's checking for file extension only so by sending a faked file extension it gi
 
 ## After words
 
-I am glad to see you all enjoyed our CTF and learned new things. That's the first time I write in a CTF and I loved seeing people enjoying the CTF and some of my task (definitely not Cr4zy-Js0n). In Securinets INSAT, We are going soon to have workshops where beginners who want to advance will have the opportunity to.
+I am glad to see you all enjoyed our CTF and learned new things. That's the first time I write in a CTF and I loved seeing people enjoying the CTF and some of my task (definitely not Cr4zy-Js0n). In Securinets INSAT, We are going soon to have workshops where beginners who want to advance will have the opportunity to. Follow us on social media for our upcoming news and events !
