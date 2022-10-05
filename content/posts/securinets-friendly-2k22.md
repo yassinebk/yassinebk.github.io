@@ -80,7 +80,7 @@ Sending money in the blockchain is so easy. But that what makes it a source of d
 
 ![No Man's Land](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1664924234/Friendly-ctf/No-man-land_edtogs.png)
 
-```Js
+```js
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
