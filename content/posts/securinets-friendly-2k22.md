@@ -6,7 +6,11 @@ cover-image-small: "https://res.cloudinary.com/dsdvvwb8v/image/upload/v166492666
 tags: [Cybersecurtiy, Writeups, Event, CTF, Securinets,Blockchain,Web]
 ---
 
+
 # Blockchain
+
+I was the author for the 7 blockchain challenges. The challenges' difficulties ranged from basic to medium. I wasn't intending to release the 2 last challenges but I had to give something for the advanced players.
+
 
 ## 3xplorer
 
