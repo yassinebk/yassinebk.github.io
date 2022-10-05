@@ -1,6 +1,6 @@
 import rangeParser from "parse-numeric-range";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { nord } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { xonokai } from "react-syntax-highlighter/dist/cjs/styles/prism";
 
 const SyntaxHighlight: object = {
   code({ node, inline, className, ...props }) {
@@ -29,7 +29,7 @@ const SyntaxHighlight: object = {
     return !inline && match ? (
       <SyntaxHighlighter
         {...applyHighlights()}
-        style={nord}
+        style={xonokai}
         language={match[1]}
         PreTag="div"
         className="codeStyle"
