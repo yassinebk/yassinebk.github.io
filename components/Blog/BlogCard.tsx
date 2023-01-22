@@ -5,6 +5,7 @@ import {
   HStack,
   Text,
   useColorModeValue,
+  VStack,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -44,9 +45,9 @@ export const BlogCard: React.FC<ProjectCardProps> = ({ post, index }) => {
           cursor: "pointer",
           alignSelf: "stretch",
           margin: "8px 8px",
-          maxWidth: "500px",
-          minWidth: "300px",
-          minHeight: "400px",
+          maxWidth: "400px",
+          minWidth: "200px",
+          minHeight: "300px",
           width: "100%",
           backgroundColor: cardBg,
           border: border,
@@ -57,8 +58,11 @@ export const BlogCard: React.FC<ProjectCardProps> = ({ post, index }) => {
         }}
       >
         <Center
+          display="block"
+          position="relative"
           minHeight="50%"
-          maxH="500px"
+          minW="300px"
+          minH="300px"
           w="100%"
           mb="4"
           borderRadius={3}
@@ -67,21 +71,19 @@ export const BlogCard: React.FC<ProjectCardProps> = ({ post, index }) => {
           <Image
             alt={post.title}
             src={post.coverImageLarge}
-            width={700}
-            height={500}
+            // width={500}
+            // height={500}
+            objectPosition="top center"
+            layout="fill"
+            objectFit="cover"
           />
         </Center>
-        <HStack
-          alignItems="center"
-          justifyContent="space-between"
-          height="40%"
-          px={"4%"}
-        >
+        <VStack alignItems="flex-start" height="40%" px={"4%"}>
           <Heading fontSize={["lg", "xl", "3xl", "3xl"]}>{post.title}</Heading>
-          <Text color={dateColor} as="h4">
+          <Text color={dateColor} as="h4" fontSize="19">
             {post.date}
           </Text>
-        </HStack>
+        </VStack>
         <Box h="12px" />
         <HStack px={"4%"}>
           {post.tags.map((t: string) => (

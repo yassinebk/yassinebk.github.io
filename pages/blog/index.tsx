@@ -10,12 +10,13 @@ import React from "react";
 import { FaRegSadTear } from "react-icons/fa";
 import { BlogCard } from "../../components/Blog/BlogCard";
 import { BlogHeading } from "../../components/Blog/BlogHeading";
-import { Searchbar } from "../../components/Blog/Searchbar";
+// import { Searchbar } from "../../components/Blog/Searchbar";
 import Layout from "../../components/Layout";
 import { useSearchFilter } from "../../hooks/useSearchFilter";
 import { useTagFilter } from "../../hooks/useTagFilter";
 import { getAllPosts } from "../../lib/getAllPost";
 import { generateSiteMap } from "../../utils/createSitemap";
+import moment from "moment";
 
 interface BlogProps {
   posts: any;
@@ -71,11 +72,11 @@ const BlogPage: React.FC<BlogProps> = ({ posts, tags }) => {
           <Box mx="auto">
             <BlogHeading>Articles</BlogHeading>
           </Box>
-          <Searchbar
+          {/* <Searchbar
             updateSearchFilter={updateSearchFilter}
             searchFilter={searchFilter}
             resetSearchFilter={resetSearchFilter}
-          />
+          /> */}
           <Box h={8}></Box>
           {/* <Box
             justifyItems="center"
@@ -151,7 +152,8 @@ const BlogPage: React.FC<BlogProps> = ({ posts, tags }) => {
               w="100%"
               paddingBottom="24px"
               className="scrollbar"
-              maxH={["100%", "100%", "100%", "100%", "55vh", "58vh"]}
+              // maxH={["100%", "100%", "100%", "100%", "55vh", "58vh"]}
+              py={32}
               // overflow={[
               //   "hidden",
               //   "hidden",
@@ -163,13 +165,20 @@ const BlogPage: React.FC<BlogProps> = ({ posts, tags }) => {
               overflowX="hidden"
               wrap="wrap"
               flexDir="row"
-              justifyContent="space-around"
+              rowGap={4}
+              justifyContent="center"
               scrollBehavior="smooth"
               px="4"
             >
-              {getPosts().map((p, i) => (
-                <BlogCard key={p.slug} post={p} index={i} />
-              ))}
+              {getPosts()
+                .sort((a, b) => {
+                  const a_date = moment(a.date, "YYYY-MM-DD");
+                  const b_date = moment(b.date, "YYYY-MM-DD");
+                  return a_date.diff(b_date) >= 0 ? -1 : 1;
+                })
+                .map((p, i: number) => (
+                  <BlogCard key={p.slug} post={p} index={i} />
+                ))}
             </Flex>
             <Divider />
           </VStack>
@@ -184,8 +193,9 @@ export default BlogPage;
 
 export const getStaticProps = async () => {
   const { posts, tags } = await getAllPosts();
-
+  console.log(posts);
   generateSiteMap(posts);
+
   return {
     props: {
       tags,

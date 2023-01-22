@@ -138,6 +138,13 @@ body::-webkit-scrollbar-thumb {
   background-color: black;
 }
 
+.codeStyle {
+  margin: 4rem 1rem !important;
+  border-radius: 20px !important;
+  /* width: fit-content !important; */
+  padding: 2rem 2rem !important;
+}
+
 .codeStyle::-webkit-scrollbar-track {
   background: #eceef1; /* color of the tracking area */
 }

@@ -34,7 +34,7 @@ export const Header3 = (props) => {
       as="h3"
       color={h3Color}
       my={6}
-      fontSize="32px"
+      fontSize="40px"
       fontFamily="Sen"
       mt={10}
       mb={6}
@@ -48,16 +48,20 @@ export const Header4 = (props: any) => (
   <Heading
     as="h4"
     fontWeight="700"
-    fontSize="26px"
+    fontSize="36px"
     mb={3}
     mt={6}
-    id={props.children[0].toLowerCase()}
+    id={
+      typeof props.children[0] === "string"
+        ? props.children[0].toLowerCase()
+        : ""
+    }
   >
     {props.children}
   </Heading>
 );
 export const Header5 = (props: any) => (
-  <Heading as="h5" fontWeight="600" fontSize="24px" mt={6} mb={2}>
+  <Heading as="h5" fontWeight="600" fontSize="32px" mt={6} mb={2}>
     {props.children}
   </Heading>
 );
