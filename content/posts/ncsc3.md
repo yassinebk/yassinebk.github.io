@@ -157,7 +157,7 @@ Can you think of some way of forcing this statement to deal with a different dat
 Alright, let's make them arrays
 ---> **So we got `b[ ]=1 & c[ ]=1`**
 
-Finally all we have to do is visit our URL `http://20.119.58.135:276/?a={%22key%22:0}&b[]=1&c[]=1`**
+Finally all we have to do is visit our URL `http://20.119.58.135:276/?a={"key":0}&b[]=1&c[]=1`**
 
 ![Weird Php Solved](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643691373/large_Weird_Php_Solved_c352ba12ea.png)
 
