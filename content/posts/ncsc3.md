@@ -57,7 +57,7 @@ I opened the source code . It's a _flask_ application and the _nginx_ server con
 
 - What got my attention is this weird combination of both routes . How in the flask application we get the status page from
 
-> http://api:5000/v1/status and we have clearly did http://20.119.58.135:4567/leetstatus .
+> <http://api:5000/v1/status> and we have clearly did <http://20.119.58.135:4567/leetstatus> .
 > In the _nginx_ configuration the requests were proxied but how it did really work. How could we get the _leetstatus_ route ?
 
 A quick read of _NGINX_ docs was really needed
@@ -68,7 +68,7 @@ A quick read of _NGINX_ docs was really needed
 **/leet -> /v1/** .
 
 Now i understood how it works. Looking back to the Location it's vulnerable to LFI but it needs a little bit of thinking .
-We want to get to http://api:5000/flag which is the same as http://api:5000/v1/../flag By transforming it by the reverse proxy configuration we get http://20.119.58.135:4567/leet../flag.
+We want to get to <http://api:5000/flag> which is the same as <http://api:5000/v1/../flag> By transforming it by the reverse proxy configuration we get <http://20.119.58.135:4567/leet../flag>.
 
 ![Welcome To Web Universe Solved](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643688103/medium_Welcome_To_Web_Universe_Solved_6623a7ca60.png)
 
@@ -119,7 +119,7 @@ In our case, the problem will occur after the upload . Actually, the bad file wi
 
 ```python
 
-	#! /usr/bin/python
+ #! /usr/bin/python
 import requests
 while True:
     reqs="http://20.119.58.135:567/uploads/phpServer.php"
@@ -140,7 +140,7 @@ This challenge is straight forward . We got three variables that we need to pick
 The thing here is we have loose comparison and a quick google search might come very helpful .
 First If statement : setting the key value to 0 will make it match the hidden string .
 
-> https://stackoverflow.com/questions/6843030/why-does-php-consider-0-to-be-equal-to-a-string
+> <https://stackoverflow.com/questions/6843030/why-does-php-consider-0-to-be-equal-to-a-string>
 
 ---> **So we got `a={"key":0}`**
 
@@ -157,7 +157,7 @@ Can you think of some way of forcing this statement to deal with a different dat
 Alright, let's make them arrays
 ---> **So we got `b[ ]=1 & c[ ]=1`**
 
-Finally all we have to do is visit our URL **http://20.119.58.135:276/?a={%22key%22:0}&b[]=1&c[]=1**
+Finally all we have to do is visit our URL `http://20.119.58.135:276/?a={%22key%22:0}&b[]=1&c[]=1`**
 
 ![Weird Php Solved](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1643691373/large_Weird_Php_Solved_c352ba12ea.png)
 
