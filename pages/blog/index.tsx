@@ -193,7 +193,7 @@ export default BlogPage;
 
 export const getStaticProps = async () => {
   const { posts, tags } = await getAllPosts();
-  console.log(posts);
+  // console.log(posts);
   generateSiteMap(posts);
 
   return {

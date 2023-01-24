@@ -27,7 +27,7 @@ export const getAllPosts = async () => {
     );
 
     const { attributes }: any = frontMatter(fileContent);
-    console.log(fileContent, attributes);
+    // console.log(fileContent, attributes);
 
     return {
       title: attributes.title,

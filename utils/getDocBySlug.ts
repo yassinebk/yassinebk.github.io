@@ -9,7 +9,7 @@ export function getDocBySlug(slug: string) {
   const fullPath = path.join(postsDirectory, `${realSlug}.md`);
   const fileContents = fs.readFileSync(fullPath, "utf8");
   const res = matter(fileContents);
-  console.log(res);
+  // console.log(res);
 
   return {
     slug: realSlug,

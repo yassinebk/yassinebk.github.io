@@ -42,7 +42,7 @@ interface BlogPostProps {
 
 const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
   const dateColor = useColorModeValue("lightSecondary", "darkSecondary");
-  console.log(post);
+  // console.log(post);
 
   const textColor = useColorModeValue("#536073", "#ADCEFF");
   if (!post) {
