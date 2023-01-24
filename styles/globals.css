@@ -42,6 +42,7 @@ a {
     grid-column-end: 3;
   }
 }
+
 @media screen and (min-width: 1000px) {
   .project-card-homepage {
     align-self: stretch;
@@ -49,31 +50,43 @@ a {
 }
 
 body::-webkit-scrollbar {
-  width: 12px; /* width of the entire scrollbar */
+  width: 12px;
+  /* width of the entire scrollbar */
 }
 
 body::-webkit-scrollbar-track {
-  background: #eceef1; /* color of the tracking area */
+  background: #eceef1;
+  /* color of the tracking area */
 }
 
 body::-webkit-scrollbar-thumb {
-  background-color: #25313a; /* color of the scroll thumb */
-  border-radius: 20px; /* roundness of the scroll thumb */
-  border: 1px solid #293640; /* creates padding around scroll thumb */
+  background-color: #25313a;
+  /* color of the scroll thumb */
+  border-radius: 20px;
+  /* roundness of the scroll thumb */
+  border: 1px solid #293640;
+  /* creates padding around scroll thumb */
 }
+
 .scrollbar::-webkit-scrollbar {
-  width: 12px; /* width of the entire scrollbar */
+  width: 12px;
+  /* width of the entire scrollbar */
 }
 
 .scrollbar::-webkit-scrollbar-track {
-  background: #eceef1; /* color of the tracking area */
+  background: #eceef1;
+  /* color of the tracking area */
 }
 
 .scrollbar::-webkit-scrollbar-thumb {
-  background-color: #25313a; /* color of the scroll thumb */
-  border-radius: 20px; /* roundness of the scroll thumb */
-  border: 1px solid #293640; /* creates padding around scroll thumb */
+  background-color: #25313a;
+  /* color of the scroll thumb */
+  border-radius: 20px;
+  /* roundness of the scroll thumb */
+  border: 1px solid #293640;
+  /* creates padding around scroll thumb */
 }
+
 /* 
 .blogPost h1 {
   font-size: 58px;
@@ -139,30 +152,48 @@ body::-webkit-scrollbar-thumb {
 }
 
 .codeStyle {
-  margin-top: 1rem;
-  margin-bottom: 2rem;
+  margin: 4rem 1rem !important;
+  border-radius: 20px !important;
+  /* width: fit-content !important; */
+  padding: 2rem 2rem !important;
 }
+
+.codeStyle {
+  margin: 4rem 1rem !important;
+  border-radius: 20px !important;
+  /* width: fit-content !important; */
+  padding: 2rem 2rem !important;
+}
+
+
 .codeStyle::-webkit-scrollbar-track {
-  background: #eceef1; /* color of the tracking area */
+  background: #eceef1;
+  /* color of the tracking area */
 }
 
 .codeStyle::-webkit-scrollbar-thumb {
-  background-color: #25313a; /* color of the scroll thumb */
-  border-radius: 5px; /* roundness of the scroll thumb */
-  border: 1px solid #293640; /* creates padding around scroll thumb */
-}
-.codeStyle::-webkit-scrollbar {
-  width: 12px; /* width of the entire scrollbar */
+  background-color: #25313a;
+  /* color of the scroll thumb */
+  border-radius: 5px;
+  /* roundness of the scroll thumb */
+  border: 1px solid #293640;
+  /* creates padding around scroll thumb */
 }
 
-ul > li > ul {
+.codeStyle::-webkit-scrollbar {
+  width: 12px;
+  /* width of the entire scrollbar */
+}
+
+ul>li>ul {
   margin-left: 3rem;
 }
-ul > li > ul > li > ul > li > a {
+
+ul>li>ul>li>ul>li>a {
   color: #f5cead !important;
 }
 
-p > span {
+p>span {
   font-size: 1.2rem;
 }
 

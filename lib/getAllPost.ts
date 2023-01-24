@@ -19,7 +19,6 @@ export const getAllPosts = async () => {
     path.join(process.cwd(), "content", "posts")
   );
 
-  let postsArray = [];
   const promises = postsFiles.map(async (FilePath) => {
     // get back an array of promises
     console.log("File Path :" + FilePath);
@@ -47,7 +46,6 @@ export const getAllPosts = async () => {
       if (!tags.includes(t)) tags.push(t);
     });
   });
-  console.log(posts);
 
   return { tags, posts };
 };

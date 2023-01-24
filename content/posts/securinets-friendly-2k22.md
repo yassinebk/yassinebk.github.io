@@ -3,7 +3,7 @@ title: "Securinets friendly CTF 2k22 - Author Writeups"
 date: 2022-10-05
 cover-image-large: "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1664926666/Friendly-ctf/friendly-banner_mbdaso.jpg"
 cover-image-small: "https://res.cloudinary.com/dsdvvwb8v/image/upload/v1664926666/Friendly-ctf/friendly-banner_mbdaso.jpg"
-tags: [Cybersecurtiy, Writeups, Event, CTF, Securinets,Blockchain,Web]
+tags: [Cybersecurtiy, Writeups, Event, CTF, Securinets, Blockchain, Web]
 ---
 
 
@@ -47,6 +47,8 @@ I know how to get informations about a contract by using a block explorer.
 
 Solidity is a cool language, but it has its own way of doing things.
 
+---
+
 ## Int3r4ct
 
 ![Int3r4ct](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1664924218/Friendly-ctf/int3ra4ct_holqse.png)
@@ -64,6 +66,8 @@ Solidity is a cool language, but it has its own way of doing things.
 
 There are librairies with which you can craft payloads and different scripts. They can make your life a lot easier !
 
+---
+
 ## Gr33dyR0b0t
 
 ![Greedy Robot](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1664924235/Friendly-ctf/greedy-robots-ch_rnd2ve.png)
@@ -79,6 +83,8 @@ There are librairies with which you can craft payloads and different scripts. Th
 ### #4 Lesson learned
 
 Sending money in the blockchain is so easy. But that what makes it a source of danger.
+
+---
 
 ## No Man's Land
 
@@ -151,6 +157,8 @@ We can use [Remix IDE](https://remix.ethereum.org/), to deploy the contract. 4. 
 
 - `tx.origin` is a bad way to identify the other party.
 
+---
+
 ## EndGame
 
 ![End game](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1664924238/Friendly-ctf/endgame_cfigxc.png)
@@ -188,6 +196,8 @@ We can use [Remix IDE](https://remix.ethereum.org/), to deploy the contract. 4. 
 ### #7 Lesson learned
 
 Solidity is not the perfect language.
+
+---
 
 ## Crazy Gambler
 
@@ -387,6 +397,8 @@ main().then(() => console.log('finished')).catch(error => {
 
 - Randomness is impossible to perform in the blockchain world without the help of off-chain solutions. Oracles are made for that. But wait how trustful are they ?
 
+---
+
 ## There is more than the eye can see
 
 ### Greedy Robot: the mean solution `mean for the robot ofc :)`
@@ -425,6 +437,10 @@ Now you get the challenge name `securinets{p0intless_g3n3ros1tY}`
 
 The weakest link in blockchain is its integration with current technologies. Never forget the old arts !
 
+---
+
+---
+
 # Web
 
 ## Cr4zy-Js0n
@@ -433,7 +449,7 @@ The weakest link in blockchain is its integration with current technologies. Nev
 
 I really want to apologize for the confusion this task has created. I wanted to expose the beginner to JSON which is a data format commonly used in web application nowadays. Didn't mean to create confusion on getting answers to the gates. I wanted it to be a fun task :/ .
 
-- **Solution**
+#### **Solution**
 
 ```bash
 curl URL -X POST --json '{"answers":[{"Gate One":"Man"},{"Gate Two":true},{"Gate Three":12}]}'
@@ -441,11 +457,13 @@ curl URL -X POST --json '{"answers":[{"Gate One":"Man"},{"Gate Two":true},{"Gate
 
 `securinets{w3b_5p34k5_j50n_It_S4fe?}`
 
+---
+
 ## Agent-007
 
 ![Agent-007](https://res.cloudinary.com/dsdvvwb8v/image/upload/v1664924233/Friendly-ctf/agent-007_k9g2vn.png)
 
-- **Solution**
+#### **Solution**
 
 User-agent header to identify user's browser. Used to identify secret agents.
 

@@ -35,8 +35,6 @@ import { Tag } from "../../components/Tag";
 import { useThemeBackground } from "../../hooks/styleHooks";
 import "../../styles/blogPost.module.css";
 import { getDocBySlug } from "../../utils/getDocBySlug";
-import { fetchAPI } from "../../lib/api";
-import qs from "qs";
 
 interface BlogPostProps {
   post: any;
@@ -161,13 +159,23 @@ const BlogPost: React.FC<BlogPostProps> = ({ post }) => {
                         my={12}
                         mx={zoomed ? "auto" : 1}
                         maxW={"1300px"}
-                        // maxH="80vh"
+                        position="relative"
                       >
-                        <img
-                          src={props.src}
-                          alt={props.alt}
-                          style={{ height: "auto", width: "auto", scale: 1.2 }}
-                        />
+                        <Box
+                          minW="20vw"
+                          maxW={"1200px"}
+                          position="relative"
+                          // minH="fit-content"
+                        >
+                          <img
+                            src={props.src}
+                            alt={props.alt}
+                            style={{
+                              scale: 1.2,
+                              width: "100%",
+                            }}
+                          />
+                        </Box>
                         <Text
                           colorScheme="blackAlpha"
                           alignSelf="center"
@@ -214,15 +222,6 @@ export const getStaticPaths = async () => {
 
 export async function getStaticProps({ params }) {
   const post = getDocBySlug(params.slug);
-
-  const query = qs.stringify(
-    {
-      populate: "*",
-    },
-    {
-      encodeValuesOnly: true,
-    }
-  );
 
   if (!post) {
     return {
